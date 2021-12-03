@@ -1,6 +1,7 @@
 <?php 
 
 class Fournisseur {
+    
     private $connexion;
     private $nomTable = "Fournisseur";
 

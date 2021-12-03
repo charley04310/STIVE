@@ -7,9 +7,11 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 
-// ON INCLUT CONNEXION BDD ET CLASS
+// ON INCLUT CONNEXION BDD /  CLASSES / EXCEPTIONS
 include_once '../config/dbConnect.php';
-include_once '../modeles/Image.class.php';
+include_once '../classes/Image.class.php';
+include_once '../classes/exceptions/APIException.class.php';
+
 
 
 // CRÉATION DE L'OBJET VIN 
@@ -27,10 +29,12 @@ if (isset($_POST['NewImage'])) {
         echo json_encode(array("message" => "Ajouté"));
 
     } else {
-
-        http_response_code(503);
-        echo json_encode(array("message" => "Impossible d'ajouter!"));
+        // On se jete une petite excepetion si jamais y'a un probleme avec la requete SQL
+        throw new Exception($error);
     }
+}else{
+        // On se jete une petite excepetion si jamais y'a un probleme le input
+        throw new InputVideException($error);
 }
 
 
@@ -51,6 +55,3 @@ switch ($var) {
         echo "i égal 2";
         break;
 }
-
-
-?>
