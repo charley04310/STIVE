@@ -2,8 +2,20 @@
 
 class Produit {
 
-    private $Nom;
-    private $Prix;
+    private $connexion;
+    private $nomTable = "Produit";
+
+    public $id;
+    public $nom;
+    public $reference;
+    public $cepage;
+    public $anne;
+    public $prix;
+    public $litre;
+    public $seuil;
+    public $quantite;
+    public $volume;
+    public $description;
 
 
     public function AjouterProduit(){

@@ -1,12 +1,18 @@
 <?php 
 
 class Fournisseur {
+    private $connexion;
+    private $nomTable = "Fournisseur";
 
-    private $Nom;
-    private $Prenom;
-    private $Adress;
+    public $nomResp;
+    public $telResp;
+    public $mailResp;
+    public $fonction;
+    public $nomDomaine;
 
-
+    public function __construct($BDD) {
+        $this->connexion = $BDD;
+    }
 
     public function AjouterFournisseur(){
     }

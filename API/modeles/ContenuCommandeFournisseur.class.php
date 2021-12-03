@@ -1,13 +1,14 @@
 <?php 
 
-class Commande {
+class ContenuCommandeFournisseur {
 
-    private $Nom;
-    private $Numero;
-    private $Prenom;
-    private $Adress;
+    public $id;
+    public $maj;
+    public $dateCrea;
 
-
+    public function __construct()
+    {
+    }
 
     public function AjouterCommande(){
     }

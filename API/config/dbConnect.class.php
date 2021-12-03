@@ -22,5 +22,9 @@ class Database {
     }
 }
 
+// CONNEXION BASE DE DONNÉES
+$Database = new Database();
+$BDD = $Database->SeConnecter();
+
 
 ?>

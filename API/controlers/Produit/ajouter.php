@@ -9,29 +9,27 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../config/dbConnect.php';
-include_once '../modeles/Vin.class.php';
+include_once '../modeles/TypeProduit.class.php';
 
-// CONNEXION BASE DE DONNÉES
-$Database = new Database();
-$BDD = $Database->SeConnecter();
 
 // CRÉATION DE L'OBJET VIN 
-$vin = new Vin($BDD);
+$TypeProduit = new TypeProduit($BDD);
 
-if (isset($_POST['NewVin']) && isset($_POST['NameVin'])) {
+// exemple de controle
+if (isset($_POST['NewTypePorduit'])) {
 
     //On range le nom du vin dans l'attribut de l'objet qui lui fait reférence 
-    $vin->$nom = $_POST['NameVin'];
+    $TypeProduit->$type_libelle  = $_POST['NewTypePorduit'];
 
-    if ($vin->ajouterVin()) {
+    if ($TypeProduit->AddTypeProduit()) {
 
         http_response_code(201);
-        echo json_encode(array("message" => "Panier créé"));
+        echo json_encode(array("message" => "Produit Ajouté"));
 
     } else {
 
         http_response_code(503);
-        echo json_encode(array("message" => "Impossible de créer le Panier!"));
+        echo json_encode(array("message" => "Impossible de créer le Vin!"));
     }
 }
 

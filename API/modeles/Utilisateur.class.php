@@ -2,9 +2,22 @@
 
 class Utilisateur {
 
-    private $Nom;
-    private $Prenom;
-    private $Adress;
+    private $connexion;
+    private $nomTable = "Utilisateur";
+
+
+    public $nom;
+    public $prenom;
+    public $adress;
+    public $tel;
+    public $mail;
+    public $code_postal;
+    public $pays;
+    private $password;
+    private $verifyPassword;
+    public $ville;
+    public $dateCreation;
+
 
 
 
