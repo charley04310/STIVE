@@ -146,7 +146,7 @@ CREATE TABLE [dbo].[ContenuCommandeClient](
 	[Ccc_Coc_Id] [int] NOT NULL,
 	[Ccc_DateCreation] [datetime] NOT NULL,
 	[Ccc_DateMaj] [datetime] NOT NULL,
-	[Ccc_Cli_Id] [int] NOT NULL,
+	[Ccc_Pro_Id] [int] NOT NULL,
  CONSTRAINT [PK_ContenuCommandeClient] PRIMARY KEY CLUSTERED 
 (
 	[Ccc_Coc_Id] ASC,
@@ -163,7 +163,7 @@ CREATE TABLE [dbo].[ContenuCommandeFournisseur](
 	[Ccf_Cof_Id] [int] NOT NULL,
 	[Ccf_DateCreation] [datetime] NOT NULL,
 	[Ccf_DateMaj] [datetime] NOT NULL,
-	[Ccf_Fou_Id] [int] NOT NULL,
+	[Ccf_Pro_Id] [int] NOT NULL,
  CONSTRAINT [PK_ContenuCommandeFournisseur] PRIMARY KEY CLUSTERED 
 (
 	[Ccf_Cof_Id] ASC,
@@ -368,10 +368,10 @@ REFERENCES [dbo].[Fournisseur] ([Fou_Id])
 GO
 ALTER TABLE [dbo].[CommandeFournisseur] CHECK CONSTRAINT [FK_CommandeFournisseur_Fournisseur]
 GO
-ALTER TABLE [dbo].[ContenuCommandeClient]  WITH CHECK ADD  CONSTRAINT [FK_ContenuCommandeClient_Client] FOREIGN KEY([Ccc_Cli_Id])
-REFERENCES [dbo].[Client] ([Cli_Id])
+ALTER TABLE [dbo].[ContenuCommandeClient]  WITH CHECK ADD  CONSTRAINT [FK_ContenuCommandeClient_Produit] FOREIGN KEY([Ccc_Pro_Id])
+REFERENCES [dbo].[Produit] ([Pro_Id])
 GO
-ALTER TABLE [dbo].[ContenuCommandeClient] CHECK CONSTRAINT [FK_ContenuCommandeClient_Client]
+ALTER TABLE [dbo].[ContenuCommandeClient] CHECK CONSTRAINT [FK_ContenuCommandeClient_Produit]
 GO
 ALTER TABLE [dbo].[ContenuCommandeClient]  WITH CHECK ADD  CONSTRAINT [FK_ContenuCommandeClient_CommandeClient] FOREIGN KEY([Ccc_Coc_Id])
 REFERENCES [dbo].[CommandeClient] ([Coc_Id])
@@ -383,10 +383,10 @@ REFERENCES [dbo].[CommandeFournisseur] ([Cof_Id])
 GO
 ALTER TABLE [dbo].[ContenuCommandeFournisseur] CHECK CONSTRAINT [FK_ContenuCommandeFournisseur_CommandeFournisseur]
 GO
-ALTER TABLE [dbo].[ContenuCommandeFournisseur]  WITH CHECK ADD  CONSTRAINT [FK_ContenuCommandeFournisseur_Fournisseur] FOREIGN KEY([Ccf_Fou_Id])
-REFERENCES [dbo].[Fournisseur] ([Fou_Id])
+ALTER TABLE [dbo].[ContenuCommandeFournisseur]  WITH CHECK ADD  CONSTRAINT [FK_ContenuCommandeFournisseur_Produit] FOREIGN KEY([Ccf_Pro_Id])
+REFERENCES [dbo].[Produit] ([Pro_Id])
 GO
-ALTER TABLE [dbo].[ContenuCommandeFournisseur] CHECK CONSTRAINT [FK_ContenuCommandeFournisseur_Fournisseur]
+ALTER TABLE [dbo].[ContenuCommandeFournisseur] CHECK CONSTRAINT [FK_ContenuCommandeFournisseur_Produit]
 GO
 ALTER TABLE [dbo].[Fournisseur]  WITH CHECK ADD  CONSTRAINT [FK_Fournisseur_Role] FOREIGN KEY([Fou_Rol_Id])
 REFERENCES [dbo].[Role] ([Rol_Id])
@@ -422,8 +422,81 @@ USE [master]
 GO
 ALTER DATABASE [Stive] SET  READ_WRITE 
 GO
+
+
+--vues
 USE [Stive]
 
+USE [Stive]
+GO
+
+/****** Object:  View [dbo].[View_Produit]    Script Date: 13/12/2021 23:17:02 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE VIEW [dbo].[View_Produit]  
+AS  
+SELECT * from Produit inner join TypeProduit on Pro_Typ_Id = Typ_Id
+					  inner join Fournisseur on Pro_Fou_Id = Fou_Id
+					  inner join Utilisateur on Fou_Id = Uti_Id
+
+GO
+
+
+
+USE [Stive]
+GO
+
+/****** Object:  View [dbo].[View_ContenuCommandeClient]    Script Date: 13/12/2021 23:29:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE VIEW [dbo].[View_ContenuCommandeClient]  
+AS  
+SELECT * from ContenuCommandeClient inner join CommandeClient on Ccc_Coc_Id = Coc_Id
+					  inner join Produit  on Ccc_Pro_Id = Pro_Id
+					  inner join Client on Coc_Cli_Id=Cli_Id
+					  inner join Utilisateur on Cli_Uti_Id = Uti_Id
+					  inner join Etat on Coc_Eta_Id=Eta_Id
+			
+
+GO
+
+
+USE [Stive]
+GO
+
+/****** Object:  View [dbo].[View_ContenuCommandeFournisseur]    Script Date: 13/12/2021 23:29:24 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+CREATE VIEW [dbo].[View_ContenuCommandeFournisseur]  
+AS  
+SELECT * from ContenuCommandeFournisseur inner join CommandeFournisseur on Ccf_Cof_Id = Cof_Id
+					  inner join Produit  on Ccf_Pro_Id = Pro_Id
+					  inner join Fournisseur on Cof_Fou_Id =Fou_Id
+					  inner join Utilisateur on Fou_Uti_Id = Uti_Id
+					  inner join Etat on Cof_Eta_Id=Eta_Id
+			
+
+GO
+
+
+--insertion de données
 insert into TypeProduit(Typ_Libelle) values ('Vin rouge'),('Vin blanc'),('Vin rosé'),('Produit terroir')
 
 insert into Role (Rol_Libelle) values ('client'),('fournisseur'),('admin')
