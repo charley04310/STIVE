@@ -9,8 +9,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../config/dbConnect.php';
-include_once '../modeles/TypeProduit.class.php';
-include_once '../modeles/APIException.class.php';
+include_once '../classes/TypeProduit.class.php';
+include_once '../classes/exceptions/APIException.class.php';
 
 
 // CRÉATION DE L'OBJET VIN 
