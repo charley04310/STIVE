@@ -8,52 +8,134 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 
 // ON INCLUT CONNEXION BDD ET CLASS
-include_once '../config/dbConnect.php';
-include_once '../classes/TypeProduit.class.php';
-include_once '../classes/exceptions/APIException.class.php';
+include_once '../../config/dbConnect.class.php';
+include_once '../../classes/Produit.class.php';
+include_once '../../classes/exceptions/APIException.class.php';
 
-
+$Database = new Database();
+$BDD = $Database->getConnexion();
 // CRÉATION DE L'OBJET VIN 
-$TypeProduit = new TypeProduit($BDD);
+$NewProduit = new Produit($BDD);
 
-// exemple de controle
-if (isset($_POST['NewTypePorduit'])) {
+$validationRequest = false;
+try{
 
-    //On range le nom du vin dans l'attribut de l'objet qui lui fait reférence 
-    $TypeProduit->$type_libelle  = $_POST['NewTypePorduit'];
+    if( 
+        isset($_POST['NameNewProduit']) &&
+        isset($_POST['FournisseurNewProduit']) &&
+        isset($_POST['PrixNewProduit']) &&
+        isset($_POST['QuantiteNewProduit']) 
+    ){
+        $NewProduit->nom  = $_POST['NameNewProduit'];
+        $NewProduit->test_input($NewProduit->nom);
+        $NewProduit->length_string($NewProduit->nom);
 
-    if ($TypeProduit->AddTypeProduit($type_libelle)) {
 
-        http_response_code(201);
-        echo json_encode(array("message" => "Produit Ajouté"));
+        $NewProduit->fournisseur = $_POST['FournisseurNewProduit'];
+        $NewProduit->test_input($NewProduit->fournisseur);
+        $NewProduit->length_string($NewProduit->fournisseur);
 
-    } else {
+        $NewProduit->prix = $_POST['PrixNewProduit'];
+        $NewProduit->test_input($NewProduit->prix);
+        $NewProduit->length_float($NewProduit->prix);
 
-        throw new Exception($e);
+        $NewProduit->$quantite = $_POST['QuantiteNewProduit'];
+        $NewProduit->test_input($NewProduit->quantite);
+        $NewProduit->length_float($NewProduit->quantite);
+
+       return $validationRequest = true;
+
+
+    }else{
+        // set response code - 400 bad request
+        http_response_code(400);
+
+        // tell the user
+        echo json_encode(array("message" => "Unable to create product. Data is incomplete."));
     }
-}else{
-    throw new InputVideException($e);
 
+
+
+    if(isset($_POST['ReferenceNewProduit'])){
+        $NewProduit->reference  = $_POST['ReferenceNewProduit'];
+        $NewProduit->test_input($NewProduit->reference);
+        $NewProduit->length_string($NewProduit->reference);
+
+    }else{
+        $NewProduit->reference  = null;
+    }
+
+
+    if(isset($_POST['CepageNewProduit'])){ 
+
+        $NewProduit->cepage = $_POST['CepageNewProduit'];
+        $NewProduit->test_input($NewProduit->cepage);
+        $NewProduit->length_string($NewProduit->cepage);
+    }else{
+        $NewProduit->cepage = null;
+
+    }
+
+    if(isset($_POST['AnneNewProduit'])){ 
+        $NewProduit->anne = $_POST['AnneNewProduit'];
+        $NewProduit->test_input($NewProduit->anne);
+        $NewProduit->length_int($NewProduit->anne);
+
+    }else{
+        $NewProduit->anne = null;
+
+    }
+
+
+    if(isset($_POST['PrixLitreNewProduit'])){
+        $NewProduit->prixlitre = $_POST['PrixLitreNewProduit'];
+        $NewProduit->test_input($NewProduit->prixlitre);
+        $NewProduit->length_int($NewProduit->prixlitre);
+    }else{
+        $NewProduit->prixlitre = null;
+
+    }
+
+    if(isset($_POST['SeuilNewProduit'])){
+        $NewProduit->seuil = $_POST['SeuilNewProduit'];
+        $NewProduit->test_input($NewProduit->seuil);
+        $NewProduit->length_float($NewProduit->seuil);
+    }else{
+        $NewProduit->seuil = null;
+
+    }
+
+    if(isset($_POST['VolumeNewProduit'])){
+        $NewProduit->seuil = $_POST['SeuilNewProduit'];
+        $NewProduit->test_input($NewProduit->volume);
+        $NewProduit->length_float($NewProduit->volume);
+    }else{
+        $NewProduit->volume = null;
+
+    }
+
+    if(isset($_POST['DescriptionNewProduit'])){
+        $NewProduit->description = $_POST['DescriptionNewProduit'];
+        $NewProduit->test_input($NewProduit->description);
+        $NewProduit->length_string($NewProduit->description);
+    }else{
+        $NewProduit->description = null;
+
+    }
+
+    if($validationRequest === true){
+        if($NewProduit->AjouterProduit()){
+            http_response_code(201);
+            throw new Exception('Produit pas ajouté');
+        }else{
+            http_response_code(503);
+            echo json_encode(array("message" => "Impossible de créer le Produit!"));
+        }
+
+    }else{
+        echo 'validate ntm';
+    }
+
+}catch(Exception $e){
+    $e->getMessage();
 }
-
-
-
-//------------------------------------------ Ou une autre méthode de gérer les $_POST['']----------------------------------------//
-
-$addVin = $_POST[$var];
-
-switch ($var) {
-    
-    case 'Blanc':
-        echo "i égal 0";
-        break;
-    case 'Rouge':
-        echo "i égal 1";
-        break;
-    case 'Rose':
-        echo "i égal 2";
-        break;
-}
-
-
-?>

@@ -5,7 +5,6 @@ class TypeProduit
 
     private $connexion;
     private $nomTable = "TypeProduit";
-
     public $type_libelle;
     public $id;
 
