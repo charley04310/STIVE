@@ -5,7 +5,6 @@ class Fournisseur extends Utilisateur{
 
     public $connexion;
     private $nomTable = "dbo.Fournisseur";
-
     public $nomResp;
     public $telResp;
     public $mailResp;
@@ -16,25 +15,23 @@ class Fournisseur extends Utilisateur{
         $this->connexion = $BDD;
     }
 
-
-
     public function AjouterFournisseur(){
         
-        try{
-        $this->AjouterUser();
-        }catch(Exception $e){
-            echo 'Exception reçue : ',  $e->getMessage(), "\n";
-        }
-
-        $ReqFourn = "SELECT * FROM dbo.Fournisseur WHERE Uti_MailContact=?";
+        $ReqFourn = "SELECT * FROM dbo.Utilisateur WHERE Uti_MailContact=?";
         $mail = $this->mail;
         $MailVerif = $this->connexion->prepare($ReqFourn);
         $MailVerif->execute(array($mail));
 
         if($MailVerif->fetch()){
-            throw new Exception('Mail deja pris');
+            throw new Exception('Mail Fournisseur deja pris');
 
-        }else{
+        }
+            
+        try{
+                $this->AjouterUser();
+                }catch(Exception $e){
+                    echo 'Exception reçue : ',  $e->getMessage(), "\n";
+                }
                 $Requete = "INSERT INTO dbo.Fournisseur (Fou_NomDomaine, Fou_NomResp, Fou_TelResp, Fou_MailResp, Fou_Fonction, Fou_Rol_Id, Fou_Uti_Id)             
                 VALUES (:Fou_NomDomaine, :Fou_NomResp, :Fou_TelResp, :Fou_MailResp, :Fou_Fonction, (SELECT Rol_Id from dbo.role WHERE Rol_Libelle='Fournisseur'), (SELECT Uti_Id from dbo.Utilisateur WHERE Uti_MailContact=:Uti_MailContact))";
 
@@ -53,7 +50,7 @@ class Fournisseur extends Utilisateur{
             }else{
                 return false;
             }
-        }
+        
        
            
        
@@ -74,5 +71,3 @@ class Fournisseur extends Utilisateur{
     }
 
 }
-
-?>
