@@ -108,14 +108,12 @@ class Utilisateur {
 
     public function AjouterUser(){
 
-        try{
+        
         $MailReq = "SELECT * FROM dbo.Utilisateur WHERE Uti_MailContact=?";
         $mail = $this->mail;
         $MailVerif = $this->connexion->prepare($MailReq);
         $MailVerif->execute(array($mail));
-        }catch(Exception $e){
-            echo 'Exception reçue : ',  $e->getMessage(), "\n";
-        }
+        
 
         if($MailVerif->fetch()){
             throw new Exception('Mail Utilisateur deja pris');
@@ -136,23 +134,23 @@ class Utilisateur {
             $stmt->bindParam(":Uti_Pays", $this->pays);
             $stmt->bindParam(":Uti_TelContact", $this->tel);
             $stmt->bindParam(":Uti_Mdp", $this->password);
-            $stmt->bindParam(":Uti_MailContact", $this->mail);       
-            if($stmt->execute()){
-                return true;
-            }else{
-                return false;
-            }
+            $stmt->bindParam(":Uti_MailContact", $this->mail);  
+
+            if(!$stmt->execute()){
+                throw new Exception('Probleme lors de excecution de requete ajout Utilisateur');
+            }     
         }
        
     }
+
+
     public function ModifierUser(){
 
-
-            $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact";
+            $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact WHERE Uti_Id";
     
     
             // prepare query statement
-            $stmt = $this->oConnexion->prepare($Requete);
+            $stmt = $this->connexion->prepare($Requete);
     
             // bind new values
             $stmt->bindParam(":Uti_Adresse", $this->adresse);
@@ -165,7 +163,9 @@ class Utilisateur {
             $stmt->bindParam(":Uti_Mdp", $this->password);
             $stmt->bindParam(":Uti_MailContact", $this->mail);       
             // execute the query
-            $stmt->execute();
+            if(!$stmt->execute()){
+                throw new Exception('Probleme lors de l\'execution de modification Utilisateur');
+            } 
         
     
     }
@@ -174,14 +174,5 @@ class Utilisateur {
 
     }
 
-    public function ObtenirUser(){ 
-
-        $MailReq = "SELECT * FROM dbo.Utilisateur WHERE Uti_MailContact=?";
-        $mail = $this->mail;
-        $MailVerif = $this->connexion->prepare($MailReq);
-        $MailVerif->execute(array($mail));
-
-
-    }
 
 }

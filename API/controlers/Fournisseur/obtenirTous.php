@@ -19,21 +19,11 @@ $NewFournisseur = $NewUtilisateur;
 
 try {
 
-
-        try {
-
-            if($NewUtilisateur->ObtenirTousFournisseur()){
-                http_response_code(201);
-            } else {
-                http_response_code(503);
-                // throw new Exception('Probleme lors de l\'envoi de la requete');
-            }
-
-        }catch (Exception $e) {
-            echo 'Exception reçue : ',  $e->getMessage(), "\n";
-        }
+    $NewUtilisateur->ObtenirTousFournisseur();
+    http_response_code(201);     
    
 } catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    http_response_code(503);
     echo $e->getTraceAsString();
 }

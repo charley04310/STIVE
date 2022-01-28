@@ -9,6 +9,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
 include_once '../../classes/Fournisseur.class.php';
+include_once '../../classes/exceptions/APIException.class.php';
+
 
 $Database = new Database();
 $BDD = $Database->getConnexion();
@@ -16,26 +18,30 @@ $BDD = $Database->getConnexion();
 $NewUtilisateur = new Fournisseur($BDD);
 $NewFournisseur = $NewUtilisateur;
 
-
-$content = file_get_contents("php://input");
-
 /****--------------------- UTILISATEUR VALIDATION  -----------------------------*/
 
 try {
 
-    if (
-        isset($_GET['Uti_Id'])
-    ) {
+    if (isset($_GET['Uti_Id'])){
 
             $NewUtilisateur->id  = $_GET['Uti_Id'];
             $NewUtilisateur->ObtenirFournisseur();
             http_response_code(201);
         
     }else{
-        throw new Exception('Objet Uti_id null');
+        // set response code - 400 bad request
+       // http_response_code(400);
+        // tell the user
+        throw new ExceptionWithStatusCode('Variable Uti_Id inexistante', 400);
     }
 
-} catch (Exception $e) {
+}catch(ExceptionWithStatusCode $ews) {
+
+    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
+    http_response_code($ews->statusCode);
+    echo $ews->getTraceAsString();
+
+}catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
     http_response_code(503);
     echo $e->getTraceAsString();

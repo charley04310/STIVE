@@ -22,7 +22,6 @@ $validationRequest = false;
 $content = file_get_contents("php://input");
 $decoded = json_decode($content, true);
 
-/****--------------------- UTILISATEUR VALIDATION  -----------------------------*/
 
 try {
 
@@ -41,7 +40,7 @@ try {
         isset($decoded['MailResp']) && 
         isset($decoded['id'])   ) {
 
-        try {
+  
 
             $UpdateUtilisateur->adresse  = $decoded['Adresse'];
             $UpdateUtilisateur->code_postal = $decoded['CodePostal'];
@@ -73,11 +72,7 @@ try {
             $UpdateUtilisateur->validate();
             $validationRequest = true;
 
-
-        } catch (Exception $e) {
-            echo 'Exception reçue : ',  $e->getMessage(), "\n";
-        }
-    } else {
+    }else{
         // set response code - 400 bad request
         http_response_code(400);
 
@@ -96,82 +91,6 @@ try {
     }
 
 
-
-    if($validationRequest === true){
-        if($UpdateUtilisateur->AjouterUser()){
-            http_response_code(201);
-            echo 'felication felicia';
-        }else{
-            http_response_code(503);
-        }
-
-    }else{
-        throw new Exception('Tous les champs ne sont pas remplis');
-    }
-
-} catch (Exception $e) {
-    echo 'Exception reçue : ',  $e->getMessage(), "\n";
-    echo $e->getTraceAsString();
-}
-
-/****---------------------FOURNISSEUR VALIDATION  -----------------------------*/
-try {
-
-    if ($validationRequest === true) {
-
-        if (
-            isset($decoded['NomDomaine']) &&
-            isset($decoded['NomResp']) &&
-            isset($decoded['TelResp']) &&
-            isset($decoded['MailResp'])
-        ) {
-
-
-
-            $UpdateFournisseur->nomDomaine  = $decoded['NomDomaine'];
-
-            // to do 
-            $UpdateFournisseur->nomDomaine = $UpdateFournisseur->test_input($UpdateFournisseur->nomDomaine);
-
-            $UpdateFournisseur->length_string($UpdateFournisseur->nomDomaine);
-
-            $UpdateFournisseur->nomResp = $decoded['NomResp'];
-            $UpdateFournisseur->test_input($UpdateFournisseur->nomResp);
-            $UpdateFournisseur->length_string($UpdateFournisseur->nomResp);
-
-            $UpdateFournisseur->telResp = $decoded['TelResp'];
-            $UpdateFournisseur->test_input($UpdateFournisseur->telResp);
-            $UpdateFournisseur->length_string($UpdateFournisseur->telResp);
-
-            $UpdateFournisseur->mailResp = $decoded['MailResp'];
-            $UpdateFournisseur->test_input($UpdateFournisseur->mailResp);
-            $UpdateFournisseur->length_string($UpdateFournisseur->mailResp);
-
-            $ValidationUpdate = true;
-        } else {
-            // set response code - 400 bad request
-           // http_response_code(400);
-            // tell the user
-            throw new Exception('Objet fournisseur incomplet');
-        }
-    } else {
-
-        throw new Exception('Validation request PB');
-    }
-
-
-
-
-    if (isset($decoded['FonctionFou'])) {
-        $UpdateFournisseur->fonction  = $decoded['FonctionFou'];
-        $UpdateFournisseur->test_input($UpdateFournisseur->fonction);
-        $UpdateFournisseur->length_string($UpdateFournisseur->fonction);
-    } else {
-        $UpdateFournisseur->fonction  = null;
-    }
-
-
-
     if ($ValidationUpdate === true) {
 
         $UpdateFournisseur->ModifierFournisseur();
@@ -180,8 +99,9 @@ try {
     } else {
         throw new Exception('Tous les champs de mise à jours fournisseur ne sont pas remplis');
     }
+
 } catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
-    http_response_code(503);
-
+    echo $e->getTraceAsString();
 }
+

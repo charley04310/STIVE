@@ -10,6 +10,8 @@ $NewUtilisateur = null;
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
 include_once '../../classes/Fournisseur.class.php';
+include_once '../../classes/exceptions/APIException.class.php';
+
 
 $Database = new Database();
 $BDD = $Database->getConnexion();
@@ -45,9 +47,6 @@ try {
         isset($decoded['Mdp']) &&
         isset($decoded['Mail'])
     ) {
-
-        try {
-
             $NewUtilisateur->adresse  = $decoded['Adresse'];
             $NewUtilisateur->code_postal = $decoded['CodePostal'];
             $NewUtilisateur->ville = $decoded['Ville'];
@@ -58,15 +57,10 @@ try {
             //$NewUtilisateur->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
             $NewUtilisateur->validate();
             $validationRequest = true;
-        } catch (Exception $e) {
-            echo 'Exception reçue : ',  $e->getMessage(), "\n";
-        }
-    } else {
-        // set response code - 400 bad request
-        http_response_code(400);
-
-        // tell the user
-        throw new Exception('Objet utilisateur incomplet');
+        
+    }else {
+        
+        throw new ExceptionWithStatusCode('Objet Utilisateur incomplet', 400);
     }
 
 
@@ -79,26 +73,8 @@ try {
         $NewUtilisateur->comp_adresse  = null;
     }
 
-
-
-    /*if($validationRequest === true){
-        if($NewUtilisateur->AjouterUser()){
-            http_response_code(201);
-            echo 'felication felicia';
-        }else{
-            http_response_code(503);
-        }
-
-    }else{
-        throw new Exception('Tous les champs ne sont pas remplis');
-    }*/
-} catch (Exception $e) {
-    echo 'Exception reçue : ',  $e->getMessage(), "\n";
-    echo $e->getTraceAsString();
-}
-
 /****---------------------FOURNISSEUR VALIDATION  -----------------------------*/
-try {
+
 
     if ($validationRequest === true) {
 
@@ -109,61 +85,59 @@ try {
             isset($decoded['MailResp'])
         ) {
 
-
-
             $NewFournisseur->nomDomaine  = $decoded['NomDomaine'];
 
             // to do 
-            $NewFournisseur->nomDomaine = $NewFournisseur->test_input($NewFournisseur->nomDomaine);
+           // $NewFournisseur->nomDomaine = $NewFournisseur->test_input($NewFournisseur->nomDomaine);
 
-            $NewFournisseur->length_string($NewFournisseur->nomDomaine);
+            //$NewFournisseur->length_string($NewFournisseur->nomDomaine);
 
             $NewFournisseur->nomResp = $decoded['NomResp'];
-            $NewFournisseur->test_input($NewFournisseur->nomResp);
-            $NewFournisseur->length_string($NewFournisseur->nomResp);
+           // $NewFournisseur->test_input($NewFournisseur->nomResp);
+            //$NewFournisseur->length_string($NewFournisseur->nomResp);
 
             $NewFournisseur->telResp = $decoded['TelResp'];
-            $NewFournisseur->test_input($NewFournisseur->telResp);
-            $NewFournisseur->length_string($NewFournisseur->telResp);
+            //$NewFournisseur->test_input($NewFournisseur->telResp);
+            //$NewFournisseur->length_string($NewFournisseur->telResp);
 
             $NewFournisseur->mailResp = $decoded['MailResp'];
-            $NewFournisseur->test_input($NewFournisseur->mailResp);
-            $NewFournisseur->length_string($NewFournisseur->mailResp);
+            //$NewFournisseur->test_input($NewFournisseur->mailResp);
+            //$NewFournisseur->length_string($NewFournisseur->mailResp);
 
             $ValidationFournisseur = true;
         } else {
-            // set response code - 400 bad request
-            http_response_code(400);
-            // tell the user
-            throw new Exception('Objet fournisseur incomplet');
+            
+            throw new ExceptionWithStatusCode('Objet fournisseur incomplet', 400);
         }
     } else {
 
-        throw new Exception('Validation request PB');
+        throw new Exception('Validation request False');
     }
-
-
 
 
     if (isset($decoded['FonctionFou'])) {
         $NewFournisseur->fonction  = $decoded['FonctionFou'];
-        $NewFournisseur->test_input($NewFournisseur->fonction);
-        $NewFournisseur->length_string($NewFournisseur->fonction);
+        //$NewFournisseur->test_input($NewFournisseur->fonction);
+        //$NewFournisseur->length_string($NewFournisseur->fonction);
     } else {
         $NewFournisseur->fonction  = null;
     }
 
 
-
-    if ($ValidationFournisseur === true) {
+    if ($ValidationFournisseur === true){
         $NewFournisseur->AjouterFournisseur() ;
         http_response_code(201);
-        
     } else {
         throw new Exception('Tous les champs ne sont pas remplis');
     }
-    
-} catch (Exception $e) {
+
+}catch (ExceptionWithStatusCode $ews) {
+
+    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
+    http_response_code($ews->statusCode);
+    echo $ews->getTraceAsString();
+
+}catch(Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
     http_response_code(503);
 
