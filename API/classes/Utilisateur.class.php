@@ -144,14 +144,30 @@ class Utilisateur {
             }
         }
        
-           
-       
     }
     public function ModifierUser(){
 
-        $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact";
 
-
+            $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact";
+    
+    
+            // prepare query statement
+            $stmt = $this->oConnexion->prepare($Requete);
+    
+            // bind new values
+            $stmt->bindParam(":Uti_Adresse", $this->adresse);
+           // var_dump($this);
+            $stmt->bindParam(":Uti_CompAdresse", $this->comp_adresse);
+            $stmt->bindParam(":Uti_Cp", $this->code_postal);
+            $stmt->bindParam(":Uti_Ville", $this->ville);
+            $stmt->bindParam(":Uti_Pays", $this->pays);
+            $stmt->bindParam(":Uti_TelContact", $this->tel);
+            $stmt->bindParam(":Uti_Mdp", $this->password);
+            $stmt->bindParam(":Uti_MailContact", $this->mail);       
+            // execute the query
+            $stmt->execute();
+        
+    
     }
     
     public function SupprimerUser(){

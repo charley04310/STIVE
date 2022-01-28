@@ -15,20 +15,21 @@ class Fournisseur extends Utilisateur{
     public function __construct($BDD) {
         $this->connexion = $BDD;
     }
+
+    
     public function ObtenirFournisseur(){
 
         $ReqFourn = "SELECT * FROM dbo.View_Fournisseur WHERE Uti_Id=?";
         $id = $this->id;
         $MailVerif = $this->connexion->prepare($ReqFourn);
         $MailVerif->execute(array($id));
+        $result = $MailVerif->fetch();
 
-        if($result = $MailVerif->fetch()){
-
-            echo json_encode($result, JSON_PRETTY_PRINT);
-    
-        }else{
-            throw new Exception('Id Fournisseur incorrect');
+        if(!$result){
+            throw new Exception('Id Fournisseur incorrect');    
         }
+        echo json_encode($result, JSON_PRETTY_PRINT);
+
     }
 
 
@@ -37,14 +38,12 @@ class Fournisseur extends Utilisateur{
         $ReqFourn = "SELECT * FROM dbo.View_Fournisseur";
         $MailVerif = $this->connexion->prepare($ReqFourn);
         $MailVerif->execute(array());
+        $result = $MailVerif->fetchAll();
 
-        if($result = $MailVerif->fetchAll()){
-
-            echo json_encode($result, JSON_PRETTY_PRINT);
-    
-        }else{
-            throw new Exception('Id Fournisseur incorrect');
+        if(!$result){
+            throw new Exception('Id Fournisseur incorrect');    
         }
+        echo json_encode($result, JSON_PRETTY_PRINT);
     }
 
 
@@ -76,42 +75,40 @@ class Fournisseur extends Utilisateur{
             $stmt->bindParam(":Fou_TelResp", $this->telResp);
             $stmt->bindParam(":Fou_MailResp", $this->mailResp);
             $stmt->bindParam(":Fou_Fonction", $this->fonction);
-            $stmt->bindParam(":Uti_MailContact", $this->mail);       
-            if($stmt->execute()){
-                return true;
-            }else{
+            $stmt->bindParam(":Uti_MailContact", $this->mail);    
+
+            if(!$stmt->execute()){
                 throw new Exception('Probleme lors de excecution de requete Fournisseur');
             }
         
        
-           
-       
     }
     public function ModifierFournisseur(){
 
+        try{
+            if($this->ModifierUser()){
 
-        $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact";
+                $Requete = "UPDATE dbo.Utilisateur SET Fou_NomDomaine=:Fou_NomDomaine, Fou_NomResp=:Fou_NomResp, Fou_TelResp=:Fou_TelResp, Fou_MailResp=:Fou_MailResp, Fou_Fonction=:Fou_Fonction WHERE Fou_Uti_Id=:Uti_Id";
 
+                // bind new values
+                $stmt = $this->connexion->prepare($Requete);
+        
+                    // bind values
+                    $stmt->bindParam(":Fou_NomDomaine", $this->nomDomaine);
+                    $stmt->bindParam(":Fou_NomResp", $this->nomResp);
+                    $stmt->bindParam(":Fou_TelResp", $this->telResp);
+                    $stmt->bindParam(":Fou_MailResp", $this->mailResp);
+                    $stmt->bindParam(":Fou_Fonction", $this->fonction);
+                    $stmt->bindParam(":Uti_Id", $this->id);
 
-        // prepare query statement
-        $stmt = $this->oConnexion->prepare($Requete);
-
-        // bind new values
-        $stmt->bindParam(":Uti_Adresse", $this->sCourriel);
-        $stmt->bindParam(":Uti_CompAdresse", $this->sMotDePasse);
-        $stmt->bindParam(":Uti_Cp", $this->sNumTelephone);
-        $stmt->bindParam(":Uti_Ville", $this->sPrenomUtilisateur);
-        $stmt->bindParam(":Uti_Pays", $this->sNomUtilisateur);
-        $stmt->bindParam(":Uti_TelContact", $this->iNoAdresse);
-        $stmt->bindParam(":idUtilisateur", $this->idUtilisateur);
-
-        // execute the query
-        if ($stmt->execute()) {
-            return true;
-        }
-
-        return false;
-
+                    if($stmt->execute()){
+                        return true ;
+                    }
+                    return false;
+            }
+        }catch(Exception $e){
+            echo 'Exception reçue : ',  $e->getMessage(), "\n";
+        }       
 
     }
     
