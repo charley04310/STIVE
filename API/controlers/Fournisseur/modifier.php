@@ -38,8 +38,8 @@ try {
         isset($decoded['NomDomaine']) &&
         isset($decoded['NomResp']) &&
         isset($decoded['TelResp']) &&
-        isset($decoded['MailResp'])
-    ) {
+        isset($decoded['MailResp']) && 
+        isset($decoded['id'])   ) {
 
         try {
 
@@ -147,10 +147,10 @@ try {
             $UpdateFournisseur->test_input($UpdateFournisseur->mailResp);
             $UpdateFournisseur->length_string($UpdateFournisseur->mailResp);
 
-            $ValidationFournisseur = true;
+            $ValidationUpdate = true;
         } else {
             // set response code - 400 bad request
-            http_response_code(400);
+           // http_response_code(400);
             // tell the user
             throw new Exception('Objet fournisseur incomplet');
         }
@@ -172,17 +172,16 @@ try {
 
 
 
-    if ($ValidationFournisseur === true) {
-        if ($UpdateFournisseur->ModifierFournisseur()) {
-            http_response_code(201);
-            echo 'Felicitation Félicia Fournisseur mis à jour';
-        } else {
-            http_response_code(503);
-            // throw new Exception('Probleme lors de l\'envoi de la requete');
-        }
+    if ($ValidationUpdate === true) {
+
+        $UpdateFournisseur->ModifierFournisseur();
+        http_response_code(201);
+    
     } else {
         throw new Exception('Tous les champs de mise à jours fournisseur ne sont pas remplis');
     }
 } catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    http_response_code(503);
+
 }

@@ -27,28 +27,16 @@ try {
         isset($_GET['Uti_Id'])
     ) {
 
-        try {
-
             $NewUtilisateur->id  = $_GET['Uti_Id'];
-
-            if($NewUtilisateur->ObtenirFournisseur()){
-                http_response_code(201);
-            } else {
-                http_response_code(503);
-                // throw new Exception('Probleme lors de l\'envoi de la requete');
-            }
-
-        }catch (Exception $e) {
-            echo 'Exception reçue : ',  $e->getMessage(), "\n";
-        }
-    } else {
-        // set response code - 400 bad request
-        http_response_code(400);
-        // tell the user
+            $NewUtilisateur->ObtenirFournisseur();
+            http_response_code(201);
+        
+    }else{
         throw new Exception('Objet Uti_id null');
     }
 
 } catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    http_response_code(503);
     echo $e->getTraceAsString();
 }

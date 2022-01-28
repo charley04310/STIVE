@@ -156,16 +156,15 @@ try {
 
 
     if ($ValidationFournisseur === true) {
-        if ($NewFournisseur->AjouterFournisseur()) {
-            http_response_code(201);
-            echo 'Felicitation Félicia';
-        } else {
-            http_response_code(503);
-            // throw new Exception('Probleme lors de l\'envoi de la requete');
-        }
+        $NewFournisseur->AjouterFournisseur() ;
+        http_response_code(201);
+        
     } else {
         throw new Exception('Tous les champs ne sont pas remplis');
     }
+    
 } catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    http_response_code(503);
+
 }
