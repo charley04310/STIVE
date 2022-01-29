@@ -27,7 +27,7 @@ class Fournisseur extends Utilisateur{
         if(!$result){
             throw new Exception('Id Fournisseur incorrect');    
         }
-
+   
         echo json_encode($result, JSON_PRETTY_PRINT);
 
     }

@@ -60,15 +60,15 @@ try {
         
     }else {
         
-        throw new ExceptionWithStatusCode('Objet Utilisateur incomplet', 400);
+        throw new ExceptionWithStatusCode('Objet Utilisatrice incomplet', 400);
     }
 
 
 
     if (isset($decoded['CompAdresse'])) {
         $NewUtilisateur->comp_adresse  = $decoded['CompAdresse'];
-        $NewUtilisateur->test_input($NewUtilisateur->comp_adresse);
-        $NewUtilisateur->length_string($NewUtilisateur->comp_adresse);
+        //$NewUtilisateur->test_input($NewUtilisateur->comp_adresse);
+        //$NewUtilisateur->length_string($NewUtilisateur->comp_adresse);
     } else {
         $NewUtilisateur->comp_adresse  = null;
     }
@@ -134,11 +134,14 @@ try {
 }catch (ExceptionWithStatusCode $ews) {
 
     echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
-    http_response_code($ews->statusCode);
-    echo $ews->getTraceAsString();
+    echo $ews->statusCode;
+    http_response_code(400);
+
 
 }catch(Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
     http_response_code(503);
 
 }
+http_response_code(401);
+echo 'fin';
