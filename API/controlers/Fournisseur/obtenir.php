@@ -24,7 +24,7 @@ try {
 
     if (isset($_GET['Uti_Id'])){
 
-            $NewUtilisateur->id  = $_GET['Uti_Id'];
+            $NewUtilisateur->id_utilisateur  = $_GET['Uti_Id'];
             $NewUtilisateur->ObtenirFournisseur();
             http_response_code(201);
         

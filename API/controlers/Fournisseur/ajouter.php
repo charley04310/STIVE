@@ -47,19 +47,18 @@ try {
         isset($decoded['Mdp']) &&
         isset($decoded['Mail'])
     ) {
-            $NewUtilisateur->adresse  = $decoded['Adresse'];
-            $NewUtilisateur->code_postal = $decoded['CodePostal'];
-            $NewUtilisateur->ville = $decoded['Ville'];
-            $NewUtilisateur->pays = $decoded['Pays'];
-            $NewUtilisateur->tel = $decoded['Telephone'];
-            $NewUtilisateur->password = password_hash($decoded['Mdp'], PASSWORD_DEFAULT);
-            $NewUtilisateur->mail = $decoded['Mail'];
-            //$NewUtilisateur->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
-            $NewUtilisateur->validate();
-            $validationRequest = true;
-        
-    }else {
-        
+        $NewUtilisateur->adresse  = $decoded['Adresse'];
+        $NewUtilisateur->code_postal = $decoded['CodePostal'];
+        $NewUtilisateur->ville = $decoded['Ville'];
+        $NewUtilisateur->pays = $decoded['Pays'];
+        $NewUtilisateur->tel = $decoded['Telephone'];
+        $NewUtilisateur->password = password_hash($decoded['Mdp'], PASSWORD_DEFAULT);
+        $NewUtilisateur->mail = $decoded['Mail'];
+        //$NewUtilisateur->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
+        $NewUtilisateur->validate();
+        $validationRequest = true;
+    } else {
+
         throw new ExceptionWithStatusCode('Objet Utilisatrice incomplet', 400);
     }
 
@@ -73,7 +72,7 @@ try {
         $NewUtilisateur->comp_adresse  = null;
     }
 
-/****---------------------FOURNISSEUR VALIDATION  -----------------------------*/
+    /****---------------------FOURNISSEUR VALIDATION  -----------------------------*/
 
 
     if ($validationRequest === true) {
@@ -88,12 +87,12 @@ try {
             $NewFournisseur->nomDomaine  = $decoded['NomDomaine'];
 
             // to do 
-           // $NewFournisseur->nomDomaine = $NewFournisseur->test_input($NewFournisseur->nomDomaine);
+            // $NewFournisseur->nomDomaine = $NewFournisseur->test_input($NewFournisseur->nomDomaine);
 
             //$NewFournisseur->length_string($NewFournisseur->nomDomaine);
 
             $NewFournisseur->nomResp = $decoded['NomResp'];
-           // $NewFournisseur->test_input($NewFournisseur->nomResp);
+            // $NewFournisseur->test_input($NewFournisseur->nomResp);
             //$NewFournisseur->length_string($NewFournisseur->nomResp);
 
             $NewFournisseur->telResp = $decoded['TelResp'];
@@ -106,7 +105,7 @@ try {
 
             $ValidationFournisseur = true;
         } else {
-            
+
             throw new ExceptionWithStatusCode('Objet fournisseur incomplet', 400);
         }
     } else {
@@ -124,22 +123,27 @@ try {
     }
 
 
-    if ($ValidationFournisseur === true){
-        $NewFournisseur->AjouterFournisseur() ;
+    if ($ValidationFournisseur === true) {
+        $NewFournisseur->AjouterFournisseur();
         http_response_code(201);
     } else {
         throw new Exception('Tous les champs ne sont pas remplis');
     }
 
-}catch (ExceptionWithStatusCode $ews) {
+} catch (ExceptionWithStatusCode $ews) {
 
     echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
     echo $ews->statusCode;
     http_response_code(400);
+   // $protocol = $_SERVER['SERVER_PROTOCOL'];
+   // header($protocol." ".$ews->statusCode." ".$ews->getMessage());
+   // header("Status : 400 Bad request");
 
+    var_dump(http_response_code());
+    echo '15';
+    //header("Status: 404 Not Found");
 
-}catch(Exception $e) {
+} catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
     http_response_code(503);
-
 }

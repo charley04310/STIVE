@@ -18,6 +18,7 @@ class Utilisateur {
     public $verifyPassword;
     public $ville;
     public $dateCreation;
+    public $id_utilisateur;
 
 
     public function __construct($BDD) {
@@ -62,6 +63,20 @@ class Utilisateur {
 
     }
     
+
+   /* function TestIsset($decoder, $value, $utilisateur ){
+
+        if(isset($decoder[$value])){
+            
+        }else{
+            throw new ExceptionWithStatusCode('Objet '.$utilisateur.' incomplet', 400);
+
+        }
+
+    }*/
+
+
+
     function length_int($data)
     {
         if(strlen($data) > 30){
@@ -146,7 +161,7 @@ class Utilisateur {
 
     public function ModifierUser(){
 
-            $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact WHERE Uti_Id";
+            $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact WHERE Uti_Id=:Uti_Id";
     
     
             // prepare query statement
@@ -161,7 +176,9 @@ class Utilisateur {
             $stmt->bindParam(":Uti_Pays", $this->pays);
             $stmt->bindParam(":Uti_TelContact", $this->tel);
             $stmt->bindParam(":Uti_Mdp", $this->password);
-            $stmt->bindParam(":Uti_MailContact", $this->mail);       
+            $stmt->bindParam(":Uti_MailContact", $this->mail);  
+            $stmt->bindParam(":Uti_Id", $this->id_utilisateur);       
+     
             // execute the query
             if(!$stmt->execute()){
                 throw new Exception('Probleme lors de l\'execution de modification Utilisateur');

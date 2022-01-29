@@ -17,14 +17,13 @@ $BDD = $Database->getConnexion();
 $UpdateUtilisateur = new Fournisseur($BDD);
 $UpdateFournisseur = $UpdateUtilisateur;
 
-$validationRequest = false;
+$ValidationUpdate = false;
 
 $content = file_get_contents("php://input");
 $decoded = json_decode($content, true);
 
 
 try {
-
 
     if (
         isset($decoded['Adresse']) &&
@@ -37,54 +36,46 @@ try {
         isset($decoded['NomDomaine']) &&
         isset($decoded['NomResp']) &&
         isset($decoded['TelResp']) &&
-        isset($decoded['MailResp']) && 
-        isset($decoded['Uti_Id'])   ) {
+        isset($decoded['MailResp']) &&
+        isset($decoded['Uti_Id'])
+    ) {
+        $UpdateUtilisateur->adresse  = $decoded['Adresse'];
+        $UpdateUtilisateur->code_postal = $decoded['CodePostal'];
+        $UpdateUtilisateur->ville = $decoded['Ville'];
+        $UpdateUtilisateur->pays = $decoded['Pays'];
+        $UpdateUtilisateur->tel = $decoded['Telephone'];
+        $UpdateUtilisateur->password = password_hash($decoded['Mdp'], PASSWORD_DEFAULT);
+        $UpdateUtilisateur->mail = $decoded['Mail'];
+        $UpdateUtilisateur->id_utilisateur  = $decoded['Uti_Id'];
 
-  
+        //$UpdateUtilisateur->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
+        $UpdateFournisseur->nomDomaine  = $decoded['NomDomaine'];
 
-            $UpdateUtilisateur->adresse  = $decoded['Adresse'];
-            $UpdateUtilisateur->code_postal = $decoded['CodePostal'];
-            $UpdateUtilisateur->ville = $decoded['Ville'];
-            $UpdateUtilisateur->pays = $decoded['Pays'];
-            $UpdateUtilisateur->tel = $decoded['Telephone'];
-            $UpdateUtilisateur->password = password_hash($decoded['Mdp'], PASSWORD_DEFAULT);
-            $UpdateUtilisateur->mail = $decoded['Mail'];
-            //$UpdateUtilisateur->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
+        // to do 
+        $UpdateFournisseur->nomDomaine = $UpdateFournisseur->test_input($UpdateFournisseur->nomDomaine);
+        //$UpdateFournisseur->length_string($UpdateFournisseur->nomDomaine);
+        $UpdateFournisseur->nomResp = $decoded['NomResp'];
+        //$UpdateFournisseur->test_input($UpdateFournisseur->nomResp);
+        //$UpdateFournisseur->length_string($UpdateFournisseur->nomResp);
+        $UpdateFournisseur->telResp = $decoded['TelResp'];
+        // $UpdateFournisseur->test_input($UpdateFournisseur->telResp);
+        //$UpdateFournisseur->length_string($UpdateFournisseur->telResp);
+        $UpdateFournisseur->mailResp = $decoded['MailResp'];
+        //$UpdateFournisseur->test_input($UpdateFournisseur->mailResp);
+        //$UpdateFournisseur->length_string($UpdateFournisseur->mailResp);
+        $UpdateUtilisateur->validate();
+        $ValidationUpdate = true;
 
-            $UpdateFournisseur->nomDomaine  = $decoded['NomDomaine'];
-
-            // to do 
-            $UpdateFournisseur->nomDomaine = $UpdateFournisseur->test_input($UpdateFournisseur->nomDomaine);
-
-            //$UpdateFournisseur->length_string($UpdateFournisseur->nomDomaine);
-
-            $UpdateFournisseur->nomResp = $decoded['NomResp'];
-            //$UpdateFournisseur->test_input($UpdateFournisseur->nomResp);
-            //$UpdateFournisseur->length_string($UpdateFournisseur->nomResp);
-
-            $UpdateFournisseur->telResp = $decoded['TelResp'];
-           // $UpdateFournisseur->test_input($UpdateFournisseur->telResp);
-            //$UpdateFournisseur->length_string($UpdateFournisseur->telResp);
-
-            $UpdateFournisseur->mailResp = $decoded['MailResp'];
-            //$UpdateFournisseur->test_input($UpdateFournisseur->mailResp);
-            //$UpdateFournisseur->length_string($UpdateFournisseur->mailResp);
-            $UpdateUtilisateur->validate();
-            $validationRequest = true;
-
-    }else{
-        // set response code - 400 bad request
-        http_response_code(400);
-
+    } else {
         // tell the user
-        throw new Exception('Objet utilisateur incomplet');
+        throw new ExceptionWithStatusCode('Modification : Objet Utilisateur incomplet', 400);
     }
 
 
 
     if (isset($decoded['CompAdresse'])) {
         $UpdateUtilisateur->comp_adresse  = $decoded['CompAdresse'];
-       // $UpdateUtilisateur->test_input($UpdateUtilisateur->comp_adresse);
+        // $UpdateUtilisateur->test_input($UpdateUtilisateur->comp_adresse);
         // $UpdateUtilisateur->length_string($UpdateUtilisateur->comp_adresse);
     } else {
         $UpdateUtilisateur->comp_adresse  = null;
@@ -95,13 +86,26 @@ try {
 
         $UpdateFournisseur->ModifierFournisseur();
         http_response_code(201);
-    
+        //echo 'top 1';
+
     } else {
         throw new Exception('Tous les champs de mise à jours fournisseur ne sont pas remplis');
     }
-
 } catch (Exception $e) {
     echo 'Exception reçue : ',  $e->getMessage(), "\n";
     echo $e->getTraceAsString();
-}
+    http_response_code(503);
+} catch (ExceptionWithStatusCode $ews) {
 
+    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
+    echo $ews->statusCode;
+    http_response_code($ews->statusCode);
+    // $protocol = $_SERVER['SERVER_PROTOCOL'];
+    // header($protocol." ".$ews->statusCode." ".$ews->getMessage());
+    // header("Status : 400 Bad request");
+
+    var_dump(http_response_code());
+    echo '15';
+    //header("Status: 404 Not Found");
+
+}
