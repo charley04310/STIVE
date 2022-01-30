@@ -18,31 +18,31 @@ $BDD = $Database->getConnexion();
 $NewUtilisateur = new Fournisseur($BDD);
 $NewFournisseur = $NewUtilisateur;
 
+$content = file_get_contents("php://input");
+$decoded = json_decode($content, true);
+
 /****--------------------- UTILISATEUR VALIDATION  -----------------------------*/
 
 try {
 
-    if (isset($_GET['Uti_Id'])){
+    if (isset($decoded['Uti_Id'])){
 
-            $NewUtilisateur->id_utilisateur  = $_GET['Uti_Id'];
+            $NewUtilisateur->id_utilisateur  = $decoded['Uti_Id'];
             $NewUtilisateur->ObtenirFournisseur();
             http_response_code(201);
         
     }else{
-        // set response code - 400 bad request
-       // http_response_code(400);
-        // tell the user
+       
         throw new ExceptionWithStatusCode('Variable Uti_Id inexistante', 400);
     }
 
 }catch(ExceptionWithStatusCode $ews) {
 
-    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
     http_response_code($ews->statusCode);
-    echo $ews->getTraceAsString();
+    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
 
 }catch (Exception $e) {
-    echo 'Exception reçue : ',  $e->getMessage(), "\n";
+
     http_response_code(503);
-    echo $e->getTraceAsString();
+    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
 }

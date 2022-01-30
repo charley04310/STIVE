@@ -19,8 +19,6 @@ $BDD = $Database->getConnexion();
 $DeleteUtilisateur = new Fournisseur($BDD);
 $DeleteFournisseur = $DeleteUtilisateur;
 
-$ValidationDelete = false;
-
 $content = file_get_contents("php://input");
 $decoded = json_decode($content, true);
 
@@ -31,21 +29,17 @@ try {
         isset($decoded['Uti_Id'])
     ){
         $DeleteUtilisateur->id_utilisateur  = $decoded['Uti_Id'];
-        $ValidationDelete = true;
-
     } else {
         throw new ExceptionWithStatusCode('Supression : Objet Utilisateur incomplet', 400);
     }
-
-
-    if ($ValidationDelete === true) {
-        $DeleteFournisseur->SupprimerFournisseur();
-        http_response_code(201);
-    } 
+  
+    $DeleteFournisseur->SupprimerFournisseur();
+    http_response_code(201);
+ 
 
 } catch (Exception $e) {
     http_response_code(503);
-   echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    echo 'Exception reçue : ',  $e->getMessage(), "\n";
 
 } catch (ExceptionWithStatusCode $ews) {
 

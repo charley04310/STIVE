@@ -1,6 +1,7 @@
-<?php 
+<?php
 
-class Utilisateur {
+class Utilisateur
+{
 
     public $connexion;
     private $nomTable = "dbo.Utilisateur";
@@ -21,119 +22,127 @@ class Utilisateur {
     public $id_utilisateur;
 
 
-    public function __construct($BDD) {
+    public function __construct($BDD)
+    {
         $this->connexion = $BDD;
     }
 
-  
     function test_input($data)
     {
         $data = stripslashes($data);
         $data = htmlspecialchars($data);
         return $data;
     }
-    
-    function validate(){
-      
-
-            $this->nom =  $this->test_input($this->nom);
-            $this->prenom =  $this->test_input($this->prenom);
-            $this->adresse =  $this->test_input($this->adresse);
-            $this->comp_adresse =  $this->test_input($this->comp_adresse);
-            $this->tel =  $this->test_input($this->tel);
-            $this->mail =  $this->test_input($this->mail);
-            $this->code_postal =  $this->test_input($this->code_postal);
-            $this->pays =  $this->test_input($this->pays);
-            $this->ville =  $this->test_input($this->ville);
-            $this->dateCreation =  $this->test_input($this->dateCreation);
-            $this->verifyPassword =  $this->test_input($this->verifyPassword);
-
-
-            $this->prenom =  $this->length_string($this->prenom);
-            $this->adresse =  $this->length_string($this->adresse);
-            $this->comp_adresse =  $this->length_string($this->comp_adresse);
-            $this->tel =  $this->length_string($this->tel);
-            $this->mail =  $this->length_string($this->mail);
-            $this->code_postal =  $this->length_string($this->code_postal);
-            $this->pays =  $this->length_string($this->pays);
-            $this->ville =  $this->length_string($this->ville);
-            $this->dateCreation =  $this->length_string($this->dateCreation);
-            $this->verifyPassword =  $this->length_string($this->verifyPassword);
-
-
-    }
-    
-
-   /* function TestIsset($decoder, $value, $utilisateur ){
-
-        if(isset($decoder[$value])){
-            
-        }else{
-            throw new ExceptionWithStatusCode('Objet '.$utilisateur.' incomplet', 400);
-
-        }
-
-    }*/
-
-
-
-    function length_int($data)
+    public function length_int($data)
     {
-        if(strlen($data) > 30){
+        if (strlen($data) > 30) {
             throw new Exception('Trop de caractère');
-        }else{
-            if(is_int($data) === false){
+        } else {
+            if (is_int($data) === false) {
                 throw new Exception('Float attendu');
-            }else{
+            } else {
                 return $data;
             }
         }
     }
-
-
-    function length_string($data)
+    public function length_string($data)
     {
-        if(strlen($data) > 30){
+        if (strlen($data) > 30) {
             throw new Exception('Trop de caractère');
-        }else{
-            if(is_string($data) === false){
+        } else {
+            if (is_string($data) === false) {
                 throw new Exception('String attendu');
-            }else{
+            } else {
                 return $data;
             }
         }
-        
     }
-
-
-    function length_float($data)
+    public function length_float($data)
     {
-        if(strlen($data) > 30){
+        if (strlen($data) > 30) {
             throw new Exception('Trop de caractère');
-        }else{
-            if(is_float($data) === false){
+        } else {
+            if (is_float($data) === false) {
                 throw new Exception('Float attendu');
-            }else{
+            } else {
                 return $data;
             }
         }
-        
+    }
+    public function validate()
+    {
+
+        $this->nom =  $this->test_input($this->nom);
+        $this->prenom =  $this->test_input($this->prenom);
+        $this->adresse =  $this->test_input($this->adresse);
+        $this->comp_adresse =  $this->test_input($this->comp_adresse);
+        $this->tel =  $this->test_input($this->tel);
+        $this->mail =  $this->test_input($this->mail);
+        $this->code_postal =  $this->test_input($this->code_postal);
+        $this->pays =  $this->test_input($this->pays);
+        $this->ville =  $this->test_input($this->ville);
+        $this->dateCreation =  $this->test_input($this->dateCreation);
+        $this->verifyPassword =  $this->test_input($this->verifyPassword);
+        $this->prenom =  $this->length_string($this->prenom);
+        $this->adresse =  $this->length_string($this->adresse);
+        $this->comp_adresse =  $this->length_string($this->comp_adresse);
+        $this->tel =  $this->length_string($this->tel);
+        $this->mail =  $this->length_string($this->mail);
+        $this->code_postal =  $this->length_string($this->code_postal);
+        $this->pays =  $this->length_string($this->pays);
+        $this->ville =  $this->length_string($this->ville);
+        $this->dateCreation =  $this->length_string($this->dateCreation);
+        $this->verifyPassword =  $this->length_string($this->verifyPassword);
+    }
+    public function constructeurUtilisateur()
+    {
+        $content = file_get_contents("php://input");
+        $decoded = json_decode($content, true);
+
+        if (
+            isset($decoded['Adresse']) &&
+            isset($decoded['CodePostal']) &&
+            isset($decoded['Ville']) &&
+            isset($decoded['Pays']) &&
+            isset($decoded['Telephone']) &&
+            isset($decoded['Mdp']) &&
+            isset($decoded['Mail'])
+        ) {
+            $this->adresse  = $decoded['Adresse'];
+            $this->code_postal = $decoded['CodePostal'];
+            $this->ville = $decoded['Ville'];
+            $this->pays = $decoded['Pays'];
+            $this->tel = $decoded['Telephone'];
+            $this->password = password_hash($decoded['Mdp'], PASSWORD_DEFAULT);
+            $this->mail = $decoded['Mail'];
+            //$this->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
+            $this->validate();
+        } else {
+            throw new ExceptionWithStatusCode('Objet Utilisatrice incomplet', 400);
+        }
+
+        if (isset($decoded['CompAdresse'])) {
+            $this->comp_adresse  = $decoded['CompAdresse'];
+            //$this->test_input($this->comp_adresse);
+            //$this->length_string($this->comp_adresse);
+        } else {
+            $this->comp_adresse  = null;
+        }
     }
 
-
-    public function AjouterUser(){
+    public function AjouterUser()
+    {
 
         $MailReq = "SELECT * FROM dbo.Utilisateur WHERE Uti_MailContact=?";
         $mail = $this->mail;
         $MailVerif = $this->connexion->prepare($MailReq);
         $MailVerif->execute(array($mail));
-        
 
-        if($MailVerif->fetch()){
+
+        if ($MailVerif->fetch()) {
             throw new Exception('Mail Utilisateur deja pris');
-
-        }else{
-                $Requete = "INSERT INTO dbo.Utilisateur (Uti_Adresse, Uti_CompAdresse, Uti_Cp, Uti_Ville, Uti_Pays, Uti_TelContact, Uti_Mdp, Uti_MailContact)
+        } else {
+            $Requete = "INSERT INTO dbo.Utilisateur (Uti_Adresse, Uti_CompAdresse, Uti_Cp, Uti_Ville, Uti_Pays, Uti_TelContact, Uti_Mdp, Uti_MailContact)
                 VALUES (:Uti_Adresse, :Uti_CompAdresse, :Uti_Cp, :Uti_Ville, :Uti_Pays, :Uti_TelContact, :Uti_Mdp, :Uti_MailContact) ";
 
             // prepare query
@@ -141,51 +150,49 @@ class Utilisateur {
 
             // bind values
             $stmt->bindParam(":Uti_Adresse", $this->adresse);
-           // var_dump($this);
+            // var_dump($this);
             $stmt->bindParam(":Uti_CompAdresse", $this->comp_adresse);
             $stmt->bindParam(":Uti_Cp", $this->code_postal);
             $stmt->bindParam(":Uti_Ville", $this->ville);
             $stmt->bindParam(":Uti_Pays", $this->pays);
             $stmt->bindParam(":Uti_TelContact", $this->tel);
             $stmt->bindParam(":Uti_Mdp", $this->password);
-            $stmt->bindParam(":Uti_MailContact", $this->mail);  
+            $stmt->bindParam(":Uti_MailContact", $this->mail);
 
-            if(!$stmt->execute()){
+            if (!$stmt->execute()) {
                 throw new Exception('Probleme lors de excecution de requete ajout Utilisateur');
-            }     
+            }
         }
-       
     }
 
+    public function ModifierUser()
+    {
 
-    public function ModifierUser(){
+        $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact WHERE Uti_Id=:Uti_Id";
 
-            $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact WHERE Uti_Id=:Uti_Id";
-    
-            // prepare query statement
-            $stmt = $this->connexion->prepare($Requete);
-    
-            // bind new values
-            $stmt->bindParam(":Uti_Adresse", $this->adresse);
-           // var_dump($this);
-            $stmt->bindParam(":Uti_CompAdresse", $this->comp_adresse);
-            $stmt->bindParam(":Uti_Cp", $this->code_postal);
-            $stmt->bindParam(":Uti_Ville", $this->ville);
-            $stmt->bindParam(":Uti_Pays", $this->pays);
-            $stmt->bindParam(":Uti_TelContact", $this->tel);
-            $stmt->bindParam(":Uti_Mdp", $this->password);
-            $stmt->bindParam(":Uti_MailContact", $this->mail);  
-            $stmt->bindParam(":Uti_Id", $this->id_utilisateur);       
-     
-            // execute the query
-            if(!$stmt->execute()){
-                throw new Exception('Probleme lors de l\'execution de modification Utilisateur');
-            } 
-        
-    
+        // prepare query statement
+        $stmt = $this->connexion->prepare($Requete);
+
+        // bind new values
+        $stmt->bindParam(":Uti_Adresse", $this->adresse);
+        // var_dump($this);
+        $stmt->bindParam(":Uti_CompAdresse", $this->comp_adresse);
+        $stmt->bindParam(":Uti_Cp", $this->code_postal);
+        $stmt->bindParam(":Uti_Ville", $this->ville);
+        $stmt->bindParam(":Uti_Pays", $this->pays);
+        $stmt->bindParam(":Uti_TelContact", $this->tel);
+        $stmt->bindParam(":Uti_Mdp", $this->password);
+        $stmt->bindParam(":Uti_MailContact", $this->mail);
+        $stmt->bindParam(":Uti_Id", $this->id_utilisateur);
+
+        // execute the query
+        if (!$stmt->execute()) {
+            throw new Exception('Probleme lors de l\'execution de modification Utilisateur');
+        }
     }
-    
-    public function SuprimerUser(){
+
+    public function SuprimerUser()
+    {
 
         $VerifUti = "SELECT * FROM dbo.Utilisateur WHERE Uti_Id=?";
         $id = $this->id_utilisateur;
@@ -206,8 +213,5 @@ class Utilisateur {
         if (!$MailVerif->execute()) {
             throw new Exception('Suppression : Id Utilisateur incorrect');
         }
-
     }
-
-
 }
