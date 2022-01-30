@@ -123,7 +123,6 @@ class Utilisateur {
 
     public function AjouterUser(){
 
-        
         $MailReq = "SELECT * FROM dbo.Utilisateur WHERE Uti_MailContact=?";
         $mail = $this->mail;
         $MailVerif = $this->connexion->prepare($MailReq);
@@ -163,7 +162,6 @@ class Utilisateur {
 
             $Requete = "UPDATE dbo.Utilisateur SET Uti_Adresse=:Uti_Adresse, Uti_CompAdresse=:Uti_CompAdresse, Uti_Cp=:Uti_Cp, Uti_Ville=:Uti_Ville, Uti_Pays=:Uti_Pays, Uti_TelContact=:Uti_TelContact, Uti_Mdp=:Uti_Mdp, Uti_MailContact=:Uti_MailContact WHERE Uti_Id=:Uti_Id";
     
-    
             // prepare query statement
             $stmt = $this->connexion->prepare($Requete);
     
@@ -187,7 +185,27 @@ class Utilisateur {
     
     }
     
-    public function SupprimerUser(){
+    public function SuprimerUser(){
+
+        $VerifUti = "SELECT * FROM dbo.Utilisateur WHERE Uti_Id=?";
+        $id = $this->id_utilisateur;
+        $MailUti = $this->connexion->prepare($VerifUti);
+        $MailUti->execute(array($id));
+
+        $result = $MailUti->fetch();
+
+        if (!$result) {
+            throw new Exception('Suppression : L\'utilisateur a déjà été suprimé ou n\'existe pas');
+        }
+
+        $ReqFourn = "DELETE FROM dbo.Utilisateur WHERE Uti_Id=:Uti_Id";
+        $MailVerif = $this->connexion->prepare($ReqFourn);
+        $MailVerif->bindParam(":Uti_Id", $this->id_utilisateur);
+
+
+        if (!$MailVerif->execute()) {
+            throw new Exception('Suppression : Id Utilisateur incorrect');
+        }
 
     }
 

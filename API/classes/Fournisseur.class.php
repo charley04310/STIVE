@@ -70,7 +70,6 @@ class Fournisseur extends Utilisateur
         if (!$stmt->execute()) {
             throw new Exception('Probleme lors de excecution de requete Fournisseur');
         }
-
     }
     public function ModifierFournisseur()
     {
@@ -91,7 +90,7 @@ class Fournisseur extends Utilisateur
             $stmt->bindParam(":Uti_Id", $this->id_utilisateur);
 
             if (!$stmt->execute()) {
-                throw new Exception('Probleme lors de la requete modification de  Fournisseur');
+                throw new Exception('Probleme lors de la requete Modification de  Fournisseur');
             }
         }
     }
@@ -100,5 +99,32 @@ class Fournisseur extends Utilisateur
 
     public function SupprimerFournisseur()
     {
-    }
+
+
+            $VerifFourn = "SELECT * FROM dbo.Fournisseur WHERE Fou_Uti_Id=:Fou_Uti_Id";
+            $id = $this->id_utilisateur;
+            $IdFourn = $this->connexion->prepare($VerifFourn);
+            $IdFourn->bindParam(":Fou_Uti_Id", $this->id_utilisateur);
+            $IdFourn->execute(array($id));
+
+            $resultat = $IdFourn->fetch();
+
+            if (!$resultat) {
+                throw new Exception('Suppression : Le founisseur a déjà été suprimé ou n\'existe pas');
+            }
+
+            $ReqFourn = "DELETE FROM dbo.Fournisseur WHERE Fou_Uti_Id=:Fou_Uti_Id";
+
+            $MailVerif = $this->connexion->prepare($ReqFourn);
+            $MailVerif->bindParam(":Fou_Uti_Id", $this->id_utilisateur);
+
+
+            if (!$MailVerif->execute()) {
+                throw new Exception('Suppression : probleme lors de l\'execution');
+            }
+            
+            $this->SuprimerUser();
+
+        }
+    
 }

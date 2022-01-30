@@ -129,21 +129,20 @@ try {
     } else {
         throw new Exception('Tous les champs ne sont pas remplis');
     }
-
 } catch (ExceptionWithStatusCode $ews) {
 
-    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
-    echo $ews->statusCode;
-    http_response_code(400);
-   // $protocol = $_SERVER['SERVER_PROTOCOL'];
-   // header($protocol." ".$ews->statusCode." ".$ews->getMessage());
-   // header("Status : 400 Bad request");
+    // echo $ews->statusCode;
+    //// $protocol = $_SERVER['SERVER_PROTOCOL'];
+    //// header($protocol." ".$ews->statusCode." ".$ews->getMessage());
+    //// header("Status : 400 Bad request");
 
-    var_dump(http_response_code());
-    echo '15';
-    //header("Status: 404 Not Found");
+    // var_dump(http_response_code());
+    http_response_code(400);
+    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
 
 } catch (Exception $e) {
-    echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    
     http_response_code(503);
+    echo 'Exception reçue : ',  $e->getMessage(), "\n";
+
 }

@@ -10,6 +10,8 @@ $UpdateUtilisateur = null;
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
 include_once '../../classes/Fournisseur.class.php';
+include_once '../../classes/exceptions/APIException.class.php';
+
 
 $Database = new Database();
 $BDD = $Database->getConnexion();
@@ -86,26 +88,24 @@ try {
 
         $UpdateFournisseur->ModifierFournisseur();
         http_response_code(201);
-        //echo 'top 1';
 
     } else {
         throw new Exception('Tous les champs de mise à jours fournisseur ne sont pas remplis');
     }
 } catch (Exception $e) {
-    echo 'Exception reçue : ',  $e->getMessage(), "\n";
-    echo $e->getTraceAsString();
+    //echo $e->getTraceAsString();
     http_response_code(503);
+    echo 'Exception reçue : ',  $e->getMessage(), "\n";
+
+
 } catch (ExceptionWithStatusCode $ews) {
 
-    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
-    echo $ews->statusCode;
     http_response_code($ews->statusCode);
+    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
+
     // $protocol = $_SERVER['SERVER_PROTOCOL'];
     // header($protocol." ".$ews->statusCode." ".$ews->getMessage());
     // header("Status : 400 Bad request");
 
-    var_dump(http_response_code());
-    echo '15';
-    //header("Status: 404 Not Found");
 
 }
