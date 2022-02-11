@@ -27,23 +27,10 @@ class Fournisseur extends Utilisateur
             isset($decoded['MailResp'])
         ) {
             $this->nomDomaine  = $decoded['NomDomaine'];
-
-            // to do 
-            // $this->nomDomaine = $this->test_input($this->nomDomaine);
-
-            //$this->length_string($this->nomDomaine);
-
             $this->nomResp = $decoded['NomResp'];
-            // $this->test_input($this->nomResp);
-            //$this->length_string($this->nomResp);
-
             $this->telResp = $decoded['TelResp'];
-            //$this->test_input($this->telResp);
-            //$this->length_string($this->telResp);
-
             $this->mailResp = $decoded['MailResp'];
-            //$this->test_input($this->mailResp);
-            //$this->length_string($this->mailResp);
+ 
 
         } else {
             throw new ExceptionWithStatusCode('Objet fournisseur incomplet', 400);

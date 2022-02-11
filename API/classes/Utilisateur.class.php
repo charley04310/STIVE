@@ -7,8 +7,6 @@ class Utilisateur
     private $nomTable = "dbo.Utilisateur";
 
 
-    public $nom;
-    public $prenom;
     public $adresse;
     public $comp_adresse;
     public $tel;

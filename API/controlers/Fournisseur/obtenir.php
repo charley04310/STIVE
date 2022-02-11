@@ -44,5 +44,5 @@ try {
 }catch (Exception $e) {
 
     http_response_code(503);
-    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
+    echo 'Exception with status reçue : ',  $e->getMessage(), "\n";
 }
