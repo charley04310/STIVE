@@ -13,19 +13,7 @@ class TypeProduit
         $this->connexion = $BDD;
     }
 
-    public function AddTypeProduit(int $type_libelle){
-        try{
-
-        } 
-        catch(InputVideException $e){ 
-            // on capture l'exception personnalisé si il y en a une
-             $error = 'Input Incorrect';
-        }
-        catch(Exception $e){
-
-        }
-        
-    }
+   
 
     public function DeleteTypeProduit(){
     }

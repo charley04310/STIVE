@@ -31,8 +31,6 @@ class Fournisseur extends Utilisateur
             $this->nomResp = $decoded['Fou_NomResp'];
             $this->telResp = $decoded['Fou_TelResp'];
             $this->mailResp = $decoded['Fou_MailResp'];
- 
-
         } else {
             throw new ExceptionWithStatusCode('Objet fournisseur incomplet', 400);
         }
@@ -44,7 +42,8 @@ class Fournisseur extends Utilisateur
             $this->fonction  = null;
         }
     }
-    public  function constructeurModificationFournisseur(){
+    public  function constructeurModificationFournisseur()
+    {
 
         $content = file_get_contents("php://input");
         $decoded = json_decode($content, true);
@@ -61,7 +60,7 @@ class Fournisseur extends Utilisateur
             isset($decoded['Fou_NomResp']) &&
             isset($decoded['Fou_TelResp']) &&
             isset($decoded['Fou_MailResp']) &&
-            isset($decoded['Uti_Id']) 
+            isset($decoded['Uti_Id'])
         ) {
             $this->adresse  = $decoded['Uti_Adresse'];
             $this->code_postal = $decoded['Uti_Cp'];
@@ -78,12 +77,11 @@ class Fournisseur extends Utilisateur
             $this->mailResp = $decoded['Fou_MailResp'];
 
             $this->validate();
-    
         } else {
             // tell the user
             throw new ExceptionWithStatusCode('Modification : Objet Utilisateur incomplet', 400);
         }
-    
+
         if (isset($decoded['Uti_CompAdresse'])) {
             $this->comp_adresse  = $decoded['Uti_CompAdresse'];
             // $this->test_input($this->comp_adresse);
@@ -153,29 +151,30 @@ class Fournisseur extends Utilisateur
     public function ModifierFournisseur()
     {
 
-            $Requete = "UPDATE dbo.Fournisseur SET Fou_NomDomaine=:Fou_NomDomaine, Fou_NomResp=:Fou_NomResp, Fou_TelResp=:Fou_TelResp, Fou_MailResp=:Fou_MailResp, Fou_Fonction=:Fou_Fonction WHERE Fou_Uti_Id=:Uti_Id";
+        $Requete = "UPDATE dbo.Fournisseur SET Fou_NomDomaine=:Fou_NomDomaine, Fou_NomResp=:Fou_NomResp, Fou_TelResp=:Fou_TelResp, Fou_MailResp=:Fou_MailResp, Fou_Fonction=:Fou_Fonction WHERE Fou_Uti_Id=:Uti_Id";
 
-            // bind new values
-            $stmt = $this->connexion->prepare($Requete);
+        // bind new values
+        $stmt = $this->connexion->prepare($Requete);
 
-            // bind values
-            $stmt->bindParam(":Fou_NomDomaine", $this->nomDomaine);
-            $stmt->bindParam(":Fou_NomResp", $this->nomResp);
-            $stmt->bindParam(":Fou_TelResp", $this->telResp);
-            $stmt->bindParam(":Fou_MailResp", $this->mailResp);
-            $stmt->bindParam(":Fou_Fonction", $this->fonction);
-            $stmt->bindParam(":Uti_Id", $this->id_utilisateur);
+        // bind values
+        $stmt->bindParam(":Fou_NomDomaine", $this->nomDomaine);
+        $stmt->bindParam(":Fou_NomResp", $this->nomResp);
+        $stmt->bindParam(":Fou_TelResp", $this->telResp);
+        $stmt->bindParam(":Fou_MailResp", $this->mailResp);
+        $stmt->bindParam(":Fou_Fonction", $this->fonction);
+        $stmt->bindParam(":Uti_Id", $this->id_utilisateur);
 
-            if (!$stmt->execute()) {
-                throw new Exception('Probleme lors de la requete Modification de  Fournisseur');
-            }
+        if (!$stmt->execute()) {
+            throw new Exception('Probleme lors de la requete Modification de  Fournisseur');
+        }
 
-            $this->ModifierUser();
+        $this->ModifierUser();
     }
     public function SupprimerFournisseur()
     {
 
         $VerifFourn = "SELECT * FROM dbo.Fournisseur WHERE Fou_Uti_Id=:Uti_Id";
+
         $id = $this->id_utilisateur;
         $IdFourn = $this->connexion->prepare($VerifFourn);
         $IdFourn->bindParam(":Uti_Id", $this->id_utilisateur);
@@ -183,17 +182,68 @@ class Fournisseur extends Utilisateur
 
         $resultat = $IdFourn->fetch();
 
+
         if (!$resultat) {
             throw new Exception('Suppression : Le founisseur a déjà été suprimé ou n\'existe pas');
         }
 
+        //json_encode($resultat, JSON_PRETTY_PRINT);
+
+        $this->id_fournisseur = $resultat['Fou_Id'];
+        $id = $this->id_fournisseur;
+
+        $VerifProduit = "SELECT * FROM dbo.Produit WHERE Pro_Fou_Id=:Pro_Fou_Id";
+
+        $IdFourn = $this->connexion->prepare($VerifProduit);
+        $IdFourn->bindParam(":Pro_Fou_Id", $this->id_fournisseur);
+        $IdFourn->execute(array($id));
+
+        $resultatProduit = $IdFourn->fetchAll();
+
+        if ($resultatProduit) {
+
+            foreach ($resultatProduit as $produit) {
+
+                $this->id_produit =  $produit['Pro_Id'];
+
+
+                $reqSelectImage = "SELECT * FROM dbo.Image WHERE Img_Pro_Id=:Img_Pro_Id";
+                $idImage = $this->connexion->prepare($reqSelectImage);
+                $idImage->bindParam(":Img_Pro_Id", $this->id_produit);
+                $idImage->execute();
+
+                $resultatImage = $idImage->fetchAll();
+
+                if ($resultatImage) {
+
+                    foreach ($resultatImage as $image) {
+                        $this->img_id =  $image['Img_Id'];
+
+                        $reqDeleteImage = "DELETE FROM dbo.Image WHERE Img_Id=:Img_Id";
+                        $idImage = $this->connexion->prepare($reqDeleteImage);
+                        $idImage->bindParam(":Img_Id", $this->img_id);
+                        $idImage->execute();
+                    }
+                }
+            }
+
+
+            $DelProduit = "DELETE FROM dbo.Produit WHERE Pro_Fou_Id=:Pro_Fou_Id";
+
+            $ReqDelProduit = $this->connexion->prepare($DelProduit);
+            $ReqDelProduit->bindParam(":Pro_Fou_Id", $this->id_fournisseur);
+
+            if (!$ReqDelProduit->execute()) {
+                throw new Exception('Suppression : probleme lors de la suppression des produits');
+            }
+        }
+
         $ReqFourn = "DELETE FROM dbo.Fournisseur WHERE Fou_Uti_Id=:Uti_Id";
+        $ReqDelFournisseur = $this->connexion->prepare($ReqFourn);
+        $ReqDelFournisseur->bindParam(":Uti_Id", $this->id_utilisateur);
 
-        $MailVerif = $this->connexion->prepare($ReqFourn);
-        $MailVerif->bindParam(":Uti_Id", $this->id_utilisateur);
 
-
-        if (!$MailVerif->execute()) {
+        if (!$ReqDelFournisseur->execute()) {
             throw new Exception('Suppression : probleme lors de l\'execution');
         }
 
