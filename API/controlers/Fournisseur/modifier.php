@@ -27,7 +27,7 @@ $decoded = json_decode($content, true);
 
 try {
 
-    $UpdateFournisseur->constructeurModification();
+    $UpdateFournisseur->constructeurModificationFournisseur();
     $UpdateFournisseur->ModifierFournisseur();
     http_response_code(201);
 

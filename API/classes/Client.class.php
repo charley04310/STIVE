@@ -45,26 +45,25 @@ class Client extends Utilisateur
         $decoded = json_decode($content, true);
 
         if (
-            isset($decoded['Adresse']) &&
-            isset($decoded['CodePostal']) &&
-            isset($decoded['Ville']) &&
-            isset($decoded['Pays']) &&
-            isset($decoded['Telephone']) &&
-            isset($decoded['Mdp']) &&
-            isset($decoded['Mail']) &&
-            isset($decoded['Uti_Id']) &&
+            isset($decoded['Uti_Adresse']) &&
+            isset($decoded['Uti_Cp']) &&
+            isset($decoded['Uti_Ville']) &&
+            isset($decoded['Uti_Pays']) &&
+            isset($decoded['Uti_TelContact']) &&
+            isset($decoded['Uti_Mdp']) &&
+            isset($decoded['Uti_MailContact']) &&
             isset($decoded['Cli_Nom']) &&
             isset($decoded['Cli_Prenom']) &&
-            isset($decoded['Cli_Uti_Id']) 
+            isset($decoded['Uti_Id']) 
         ) {
-            $this->adresse  = $decoded['Adresse'];
-            $this->code_postal = $decoded['CodePostal'];
-            $this->ville = $decoded['Ville'];
-            $this->pays = $decoded['Pays'];
-            $this->tel = $decoded['Telephone'];
-            $this->password = password_hash($decoded['Mdp'], PASSWORD_DEFAULT);
-            $this->mail = $decoded['Mail'];
-            $this->id_utilisateur  = $decoded['Cli_Uti_Id'];
+            $this->adresse  = $decoded['Uti_Adresse'];
+            $this->code_postal = $decoded['Uti_Cp'];
+            $this->ville = $decoded['Uti_Ville'];
+            $this->pays = $decoded['Uti_Pays'];
+            $this->tel = $decoded['Uti_TelContact'];
+            $this->password = password_hash($decoded['Uti_Mdp'], PASSWORD_DEFAULT);
+            $this->mail = $decoded['Uti_MailContact'];
+            $this->id_utilisateur  = $decoded['Uti_Id'];
             $this->nom = $decoded['Cli_Nom'];
             $this->prenom = $decoded['Cli_Prenom'];
 
@@ -138,6 +137,8 @@ class Client extends Utilisateur
     public function ModifierClient()
     {
 
+
+
         $Requete = "UPDATE dbo.Client SET Cli_Nom=:Cli_Nom, Cli_Prenom=:Cli_Prenom, Cli_DateNaissance=:Cli_DateNaissance, Cli_Rol_Id=1  WHERE Cli_Uti_Id=:Cli_Uti_Id";
 
         // bind new values
@@ -178,5 +179,7 @@ class Client extends Utilisateur
         if (!$MailVerif->execute()) {
             throw new Exception('Suppression : Id client incorrect');
         }
+
+        $this->SuprimerUser();
     }
 }

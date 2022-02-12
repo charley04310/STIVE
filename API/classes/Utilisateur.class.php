@@ -6,7 +6,8 @@ class Utilisateur
     public $connexion;
     private $nomTable = "dbo.Utilisateur";
 
-
+    public $nom;
+    public $prenom;
     public $adresse;
     public $comp_adresse;
     public $tel;
@@ -98,29 +99,29 @@ class Utilisateur
         $decoded = json_decode($content, true);
 
         if (
-            isset($decoded['Adresse']) &&
-            isset($decoded['CodePostal']) &&
-            isset($decoded['Ville']) &&
-            isset($decoded['Pays']) &&
-            isset($decoded['Telephone']) &&
-            isset($decoded['Mdp']) &&
-            isset($decoded['Mail'])
+            isset($decoded['Uti_Adresse']) &&
+            isset($decoded['Uti_Cp']) &&
+            isset($decoded['Uti_Ville']) &&
+            isset($decoded['Uti_Pays']) &&
+            isset($decoded['Uti_TelContact']) &&
+            isset($decoded['Uti_Mdp']) &&
+            isset($decoded['Uti_MailContact'])
         ) {
-            $this->adresse  = $decoded['Adresse'];
-            $this->code_postal = $decoded['CodePostal'];
-            $this->ville = $decoded['Ville'];
-            $this->pays = $decoded['Pays'];
-            $this->tel = $decoded['Telephone'];
-            $this->password = password_hash($decoded['Mdp'], PASSWORD_DEFAULT);
-            $this->mail = $decoded['Mail'];
+            $this->adresse  = $decoded['Uti_Adresse'];
+            $this->code_postal = $decoded['Uti_Cp'];
+            $this->ville = $decoded['Uti_Ville'];
+            $this->pays = $decoded['Uti_Pays'];
+            $this->tel = $decoded['Uti_TelContact'];
+            $this->password = password_hash($decoded['Uti_Mdp'], PASSWORD_DEFAULT);
+            $this->mail = $decoded['Uti_MailContact'];
             //$this->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
             $this->validate();
         } else {
-            throw new ExceptionWithStatusCode('Objet Utilisatrice incomplet', 400);
+            throw new ExceptionWithStatusCode('Objet Utilisatrice 2 incomplet', 400);
         }
 
-        if (isset($decoded['CompAdresse'])) {
-            $this->comp_adresse  = $decoded['CompAdresse'];
+        if (isset($decoded['Uti_CompAdresse'])) {
+            $this->comp_adresse  = $decoded['Uti_CompAdresse'];
             //$this->test_input($this->comp_adresse);
             //$this->length_string($this->comp_adresse);
         } else {

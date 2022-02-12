@@ -5,6 +5,7 @@ class Fournisseur extends Utilisateur
 {
     private $nomTable = "dbo.Fournisseur";
     public $nomResp;
+    public $id_fournisseur;
     public $telResp;
     public $mailResp;
     public $fonction;
@@ -21,60 +22,61 @@ class Fournisseur extends Utilisateur
         $decoded = json_decode($content, true);
 
         if (
-            isset($decoded['NomDomaine']) &&
-            isset($decoded['NomResp']) &&
-            isset($decoded['TelResp']) &&
-            isset($decoded['MailResp'])
+            isset($decoded['Fou_NomDomaine']) &&
+            isset($decoded['Fou_NomResp']) &&
+            isset($decoded['Fou_TelResp']) &&
+            isset($decoded['Fou_MailResp'])
         ) {
-            $this->nomDomaine  = $decoded['NomDomaine'];
-            $this->nomResp = $decoded['NomResp'];
-            $this->telResp = $decoded['TelResp'];
-            $this->mailResp = $decoded['MailResp'];
+            $this->nomDomaine  = $decoded['Fou_NomDomaine'];
+            $this->nomResp = $decoded['Fou_NomResp'];
+            $this->telResp = $decoded['Fou_TelResp'];
+            $this->mailResp = $decoded['Fou_MailResp'];
  
 
         } else {
             throw new ExceptionWithStatusCode('Objet fournisseur incomplet', 400);
         }
-        if (isset($decoded['FonctionFou'])) {
-            $this->fonction  = $decoded['FonctionFou'];
+        if (isset($decoded['Fou_Fonction'])) {
+            $this->fonction  = $decoded['Fou_Fonction'];
             //$this->test_input($this->fonction);
             //$this->length_string($this->fonction);
         } else {
             $this->fonction  = null;
         }
     }
-    public  function constructeurModification(){
+    public  function constructeurModificationFournisseur(){
 
         $content = file_get_contents("php://input");
         $decoded = json_decode($content, true);
 
         if (
-            isset($decoded['Adresse']) &&
-            isset($decoded['CodePostal']) &&
-            isset($decoded['Ville']) &&
-            isset($decoded['Pays']) &&
-            isset($decoded['Telephone']) &&
-            isset($decoded['Mdp']) &&
-            isset($decoded['Mail']) &&
-            isset($decoded['NomDomaine']) &&
-            isset($decoded['NomResp']) &&
-            isset($decoded['TelResp']) &&
-            isset($decoded['MailResp']) &&
-            isset($decoded['Uti_Id'])
+            isset($decoded['Uti_Adresse']) &&
+            isset($decoded['Uti_Cp']) &&
+            isset($decoded['Uti_Ville']) &&
+            isset($decoded['Uti_Pays']) &&
+            isset($decoded['Uti_TelContact']) &&
+            isset($decoded['Uti_Mdp']) &&
+            isset($decoded['Uti_MailContact']) &&
+            isset($decoded['Fou_NomDomaine']) &&
+            isset($decoded['Fou_NomResp']) &&
+            isset($decoded['Fou_TelResp']) &&
+            isset($decoded['Fou_MailResp']) &&
+            isset($decoded['Uti_Id']) 
         ) {
-            $this->adresse  = $decoded['Adresse'];
-            $this->code_postal = $decoded['CodePostal'];
-            $this->ville = $decoded['Ville'];
-            $this->pays = $decoded['Pays'];
-            $this->tel = $decoded['Telephone'];
-            $this->password = password_hash($decoded['Mdp'], PASSWORD_DEFAULT);
-            $this->mail = $decoded['Mail'];
+            $this->adresse  = $decoded['Uti_Adresse'];
+            $this->code_postal = $decoded['Uti_Cp'];
+            $this->ville = $decoded['Uti_Ville'];
+            $this->pays = $decoded['Uti_Pays'];
+            $this->tel = $decoded['Uti_TelContact'];
+            $this->password = password_hash($decoded['Uti_Mdp'], PASSWORD_DEFAULT);
+            $this->mail = $decoded['Uti_MailContact'];
             $this->id_utilisateur  = $decoded['Uti_Id'];
             //$this->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
-            $this->nomDomaine  = $decoded['NomDomaine'];
-            $this->nomResp = $decoded['NomResp'];
-            $this->telResp = $decoded['TelResp'];
-            $this->mailResp = $decoded['MailResp'];
+            $this->nomDomaine  = $decoded['Fou_NomDomaine'];
+            $this->nomResp = $decoded['Fou_NomResp'];
+            $this->telResp = $decoded['Fou_TelResp'];
+            $this->mailResp = $decoded['Fou_MailResp'];
+
             $this->validate();
     
         } else {
@@ -82,16 +84,16 @@ class Fournisseur extends Utilisateur
             throw new ExceptionWithStatusCode('Modification : Objet Utilisateur incomplet', 400);
         }
     
-        if (isset($decoded['CompAdresse'])) {
-            $this->comp_adresse  = $decoded['CompAdresse'];
+        if (isset($decoded['Uti_CompAdresse'])) {
+            $this->comp_adresse  = $decoded['Uti_CompAdresse'];
             // $this->test_input($this->comp_adresse);
             // $this->length_string($this->comp_adresse);
         } else {
             $this->comp_adresse  = null;
         }
 
-        if (isset($decoded['Fonction'])) {
-            $this->fonction  = $decoded['Fonction'];
+        if (isset($decoded['Fou_Fonction'])) {
+            $this->fonction  = $decoded['Fou_Fonction'];
             // $this->test_input($this->comp_adresse);
             // $this->length_string($this->comp_adresse);
         } else {
@@ -151,7 +153,7 @@ class Fournisseur extends Utilisateur
     public function ModifierFournisseur()
     {
 
-            $Requete = "UPDATE dbo.Fournisseur SET Fou_NomDomaine=:Fou_NomDomaine, Fou_NomResp=:Fou_NomResp, Fou_TelResp=:Fou_TelResp, Fou_MailResp=:Fou_MailResp, Fou_Fonction=:Fou_Fonction WHERE Fou_Uti_Id=:Fou_Uti_Id";
+            $Requete = "UPDATE dbo.Fournisseur SET Fou_NomDomaine=:Fou_NomDomaine, Fou_NomResp=:Fou_NomResp, Fou_TelResp=:Fou_TelResp, Fou_MailResp=:Fou_MailResp, Fou_Fonction=:Fou_Fonction WHERE Fou_Uti_Id=:Uti_Id";
 
             // bind new values
             $stmt = $this->connexion->prepare($Requete);
@@ -162,7 +164,7 @@ class Fournisseur extends Utilisateur
             $stmt->bindParam(":Fou_TelResp", $this->telResp);
             $stmt->bindParam(":Fou_MailResp", $this->mailResp);
             $stmt->bindParam(":Fou_Fonction", $this->fonction);
-            $stmt->bindParam(":Fou_Uti_Id", $this->id_utilisateur);
+            $stmt->bindParam(":Uti_Id", $this->id_utilisateur);
 
             if (!$stmt->execute()) {
                 throw new Exception('Probleme lors de la requete Modification de  Fournisseur');
