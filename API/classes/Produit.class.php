@@ -44,12 +44,12 @@ class Produit extends Fournisseur
             isset($decoded['Pro_Prix'])
 
         ) {
-            $this->nom  = $decoded['Pro_Nom'];
+            $this->pro_nom  = $decoded['Pro_Nom'];
             $this->type_id = $decoded['Pro_Typ_Id'];
             $this->id_fournisseur = $decoded['Pro_Fou_Id'];
-            $this->quantite = $decoded['Pro_Quantite'];
+            $this->pro_quantite = $decoded['Pro_Quantite'];
             $this->pro_CommandeAuto = $decoded['Pro_CommandeAuto'];
-            $this->prix = $decoded['Pro_Prix'];
+            $this->pro_prix = $decoded['Pro_Prix'];
         } else {
             throw new ExceptionWithStatusCode('Objet Produit incomplet', 400);
         }
@@ -63,40 +63,40 @@ class Produit extends Fournisseur
         }
 
         if (isset($decoded['Pro_PrixLitre'])) {
-            $this->prixlitre  = $decoded['Pro_PrixLitre'];
+            $this->pro_prixlitre  = $decoded['Pro_PrixLitre'];
         } else {
-            $this->prixlitre  = null;
+            $this->pro_prixlitre  = null;
         }
 
         if (isset($decoded['Pro_Cepage'])) {
-            $this->cepage = $decoded['Pro_Cepage'];
+            $this->pro_cepage = $decoded['Pro_Cepage'];
         } else {
-            $this->cepage  = null;
+            $this->pro_cepage  = null;
         }
 
         if (isset($decoded['Pro_Annee'])) {
-            $this->anne = $decoded['Pro_Annee'];
+            $this->pro_anne = $decoded['Pro_Annee'];
         } else {
-            $this->anne  = null;
+            $this->pro_anne  = null;
         }
 
         if (isset($decoded['Pro_SeuilAlerte'])) {
-            $this->seuil = $decoded['Pro_SeuilAlerte'];
+            $this->pro_seuil = $decoded['Pro_SeuilAlerte'];
         } else {
-            $this->seuil  = null;
+            $this->pro_seuil  = null;
         }
 
         if (isset($decoded['Pro_Volume'])) {
-            $this->volume = $decoded['Pro_Volume'];
+            $this->pro_volume = $decoded['Pro_Volume'];
         } else {
-            $this->volume  = null;
+            $this->pro_volume  = null;
         }
 
 
         if (isset($decoded['Pro_Description'])) {
-            $this->description = $decoded['Pro_Description'];
+            $this->pro_description = $decoded['Pro_Description'];
         } else {
-            $this->description  = null;
+            $this->pro_description  = null;
         }
     }
 
@@ -212,7 +212,7 @@ class Produit extends Fournisseur
     public function ObtenirTousProduit()
     {
 
-        $ReqClient = "SELECT * FROM dbo.View_Produit";
+        $ReqClient = "SELECT * FROM dbo.Produit";
         $MailVerif = $this->connexion->prepare($ReqClient);
         $MailVerif->execute(array());
         $result = $MailVerif->fetchAll();

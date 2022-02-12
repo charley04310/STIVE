@@ -6,52 +6,34 @@ header("Access-Control-Allow-Methods: POST"); // On renseigne le type de requete
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-
-// ON INCLUT CONNEXION BDD /  CLASSES / EXCEPTIONS
-include_once '../config/dbConnect.php';
-include_once '../classes/Image.class.php';
-include_once '../classes/exceptions/APIException.class.php';
-
+// ON INCLUT CONNEXION BDD ET CLASS
+include_once '../../config/dbConnect.class.php';
+include_once '../../classes/Image.class.php';
+include_once '../../classes/exceptions/APIException.class.php';
 
 
-// CRÉATION DE L'OBJET VIN 
-$image = new Image($BDD);
+$Database = new Database();
+$BDD = $Database->getConnexion();
 
-// exemple de controle
-if (isset($_POST['NewImage'])) {
-
-    //On range le nom du vin dans l'attribut de l'objet qui lui fait reférence 
-    $image->$nom  = $_POST['NewImage'];
-
-    if ($TypeProduit->AddImage()) {
-
-        http_response_code(201);
-        echo json_encode(array("message" => "Ajouté"));
-
-    } else {
-        // On se jete une petite excepetion si jamais y'a un probleme avec la requete SQL
-        throw new Exception($error);
-    }
-}else{
-        // On se jete une petite excepetion si jamais y'a un probleme le input
-        throw new InputVideException($error);
-}
+$NewImage = new Image($BDD);
 
 
 
-//------------------------------------------ Ou une autre méthode de gérer les $_POST['']----------------------------------------//
+/****--------------------- UTILISATEUR VALIDATION  -----------------------------*/
 
-$addVin = $_POST[$var];
+try {
 
-switch ($var) {
+    $NewImage->constructeurImage();
+    $NewImage->AjouterImage();
+    http_response_code(201);
     
-    case 'Blanc':
-        echo "i égal 0";
-        break;
-    case 'Rouge':
-        echo "i égal 1";
-        break;
-    case 'Rose':
-        echo "i égal 2";
-        break;
+} catch (ExceptionWithStatusCode $ews) {
+
+    http_response_code(400);
+    echo 'Exception with status reçue : ',  $ews->getMessage(), "\n";
+
+} catch (Exception $e) {
+    http_response_code(503);
+    echo 'Exception reçue : ',  $e->getMessage(), "\n";
+
 }
