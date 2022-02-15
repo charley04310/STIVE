@@ -14,6 +14,7 @@ class Fournisseur extends Utilisateur
     public function __construct($BDD)
     {
         parent::__construct($BDD);
+       // $this->id_fournisseur = intval($this->id_fournisseur);
     }
     public function constructeurFournisseur()
     {
@@ -115,7 +116,6 @@ class Fournisseur extends Utilisateur
     }
     public function ObtenirTousFournisseur()
     {
-
         $ReqFourn = "SELECT * FROM dbo.View_Fournisseur";
         $MailVerif = $this->connexion->prepare($ReqFourn);
         $MailVerif->execute(array());
@@ -124,8 +124,8 @@ class Fournisseur extends Utilisateur
         if (!$result) {
             throw new Exception('Id Fournisseur incorrect');
         }
-        echo json_encode($result, true);
-    }
+     echo json_encode($result, true);
+    } 
     public function AjouterFournisseur()
     {
         $this->AjouterUser();
@@ -206,7 +206,6 @@ class Fournisseur extends Utilisateur
 
                 $this->id_produit =  $produit['Pro_Id'];
 
-
                 $reqSelectImage = "SELECT * FROM dbo.Image WHERE Img_Pro_Id=:Img_Pro_Id";
                 $idImage = $this->connexion->prepare($reqSelectImage);
                 $idImage->bindParam(":Img_Pro_Id", $this->id_produit);
@@ -227,7 +226,6 @@ class Fournisseur extends Utilisateur
                 }
             }
 
-
             $DelProduit = "DELETE FROM dbo.Produit WHERE Pro_Fou_Id=:Pro_Fou_Id";
 
             $ReqDelProduit = $this->connexion->prepare($DelProduit);
@@ -241,7 +239,6 @@ class Fournisseur extends Utilisateur
         $ReqFourn = "DELETE FROM dbo.Fournisseur WHERE Fou_Uti_Id=:Uti_Id";
         $ReqDelFournisseur = $this->connexion->prepare($ReqFourn);
         $ReqDelFournisseur->bindParam(":Uti_Id", $this->id_utilisateur);
-
 
         if (!$ReqDelFournisseur->execute()) {
             throw new Exception('Suppression : probleme lors de l\'execution');

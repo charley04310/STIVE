@@ -122,6 +122,7 @@ class Produit extends Fournisseur
 
 
         ) {
+            
             $this->nom  = $decoded['Pro_Nom'];
             $this->type_id = $decoded['Pro_Typ_Id'];
             $this->id_fournisseur = $decoded['Pro_Fou_Id'];
@@ -202,17 +203,17 @@ class Produit extends Fournisseur
         $id = $this->id_produit;
         $MailVerif = $this->connexion->prepare($ReqClient);
         $MailVerif->execute(array($id));
-        $result = $MailVerif->fetchAll();
+        $result = $MailVerif->fetch();
 
         if (!$result) {
             throw new Exception('Id Produit incorrect');
         }
-        echo json_encode($result, true);
+        echo json_encode($result, JSON_NUMERIC_CHECK);
     }
     public function ObtenirTousProduit()
     {
 
-        $ReqClient = "SELECT * FROM dbo.Produit";
+        $ReqClient = "SELECT * FROM dbo.View_Produit";
         $MailVerif = $this->connexion->prepare($ReqClient);
         $MailVerif->execute(array());
         $result = $MailVerif->fetchAll();
@@ -220,7 +221,7 @@ class Produit extends Fournisseur
         if (!$result) {
             throw new Exception('Id Client incorrect');
         }
-        echo json_encode($result, true);
+        echo json_encode($result, JSON_NUMERIC_CHECK);
     }
 
     public function ModifierProduit()

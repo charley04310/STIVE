@@ -9,6 +9,8 @@ class Image extends Produit
     public $img_id;
     public $img_adresse;
     public $img_nom;
+    public $tailleMax = 2097152;
+    public $extensionValide = array('jpg', 'png', 'jpeg');
 
     // on construit l'objet à partir de la BDD 
     public function __construct($BDD)
@@ -22,14 +24,38 @@ class Image extends Produit
 
         if (
             isset($decoded['Pro_Id']) &&
-            isset($decoded['Img_Adresse']) &&
-            isset($decoded['Img_Nom'])
-
-
+            isset($decoded['Img_Nom']) &&
+            isset($_FILES['Img_File'])
         ) {
-            $this->id_produit = $decoded['Pro_Id'];
-            $this->img_adresse = $decoded['Img_Adresse'];
-            $this->img_nom = $decoded['Img_Nom'];
+
+            if($_FILES['Img_File']['size'] <= $this->tailleMax){
+
+                $extentionUpload = strtolower(substr(strrchr($_FILES['Img_File']['name'], '.'), 1));
+
+                if(in_array($extentionUpload, $this->extensionValide)){
+
+                    $chemin = "../img/".$decoded['Img_Nom'].".".$extentionUpload;
+                    $this->img_adresse = $chemin;
+
+                    $resultat = move_uploaded_file($_FILES['Img_File']['tmp_name'], $chemin);
+
+                    if($resultat){
+                        
+                        $this->id_produit = $decoded['Pro_Id'];
+                        $this->img_nom = $decoded['Img_Nom'];
+            
+                    }else{
+                        throw new Exception('IMAGE : problème lors de l\'enregistrement sur le serveur ');
+                    }
+                }else{
+
+                    throw new Exception('IMAGE : extension invalide ! ');
+                }
+            
+            }else{
+              throw new Exception('IMAGE : La taille de l\'image est trop grande');
+            }  
+
         } else {
             throw new ExceptionWithStatusCode('Objet Image incomplet', 400);
         }
