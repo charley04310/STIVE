@@ -14,13 +14,11 @@ class Fournisseur extends Utilisateur
     public function __construct($BDD)
     {
         parent::__construct($BDD);
+
        // $this->id_fournisseur = intval($this->id_fournisseur);
     }
-    public function constructeurFournisseur()
+    public function constructeurFournisseur($decoded)
     {
-
-        $content = file_get_contents("php://input");
-        $decoded = json_decode($content, true);
 
         if (
             isset($decoded['Fou_NomDomaine']) &&
@@ -35,6 +33,7 @@ class Fournisseur extends Utilisateur
         } else {
             throw new ExceptionWithStatusCode('Objet fournisseur incomplet', 400);
         }
+
         if (isset($decoded['Fou_Fonction'])) {
             $this->fonction  = $decoded['Fou_Fonction'];
             //$this->test_input($this->fonction);
@@ -61,7 +60,7 @@ class Fournisseur extends Utilisateur
             isset($decoded['Fou_NomResp']) &&
             isset($decoded['Fou_TelResp']) &&
             isset($decoded['Fou_MailResp']) &&
-            isset($decoded['Uti_Id'])
+            isset($decoded['Fou_Uti_Id'])
         ) {
             $this->adresse  = $decoded['Uti_Adresse'];
             $this->code_postal = $decoded['Uti_Cp'];
@@ -70,17 +69,17 @@ class Fournisseur extends Utilisateur
             $this->tel = $decoded['Uti_TelContact'];
             $this->password = password_hash($decoded['Uti_Mdp'], PASSWORD_DEFAULT);
             $this->mail = $decoded['Uti_MailContact'];
-            $this->id_utilisateur  = $decoded['Uti_Id'];
+            $this->id_utilisateur  = $decoded['Fou_Uti_Id'];
             //$this->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
             $this->nomDomaine  = $decoded['Fou_NomDomaine'];
             $this->nomResp = $decoded['Fou_NomResp'];
             $this->telResp = $decoded['Fou_TelResp'];
             $this->mailResp = $decoded['Fou_MailResp'];
 
-            $this->validate();
+           // $this->validate();
         } else {
             // tell the user
-            throw new ExceptionWithStatusCode('Modification : Objet Utilisateur incomplet', 400);
+            throw new ExceptionWithStatusCode('Modification : Objet Utilisateur 2 incomplet', 400);
         }
 
         if (isset($decoded['Uti_CompAdresse'])) {
@@ -124,18 +123,21 @@ class Fournisseur extends Utilisateur
         if (!$result) {
             throw new Exception('Id Fournisseur incorrect');
         }
-     echo json_encode($result, true);
+
+     echo json_encode($result, JSON_NUMERIC_CHECK);
+
+
     } 
     public function AjouterFournisseur()
     {
-        $this->AjouterUser();
 
-        $Requete = "INSERT INTO dbo.Fournisseur (Fou_NomDomaine, Fou_NomResp, Fou_TelResp, Fou_MailResp, Fou_Fonction, Fou_Rol_Id, Fou_Uti_Id)             
-                VALUES (:Fou_NomDomaine, :Fou_NomResp, :Fou_TelResp, :Fou_MailResp, :Fou_Fonction, 2, (SELECT Uti_Id from dbo.Utilisateur WHERE Uti_MailContact=:Uti_MailContact))";
+
+        $role = 2;
+        $Requete = "INSERT INTO dbo.Fournisseur(Fou_NomDomaine, Fou_NomResp, Fou_TelResp, Fou_MailResp, Fou_Fonction, Fou_Rol_Id, Fou_Uti_Id)     
+                VALUES(:Fou_NomDomaine, :Fou_NomResp, :Fou_TelResp, :Fou_MailResp, :Fou_Fonction, $role, (SELECT Uti_Id from dbo.Utilisateur WHERE Uti_MailContact=:Uti_MailContact))";
 
         // prepare query
         $stmt = $this->connexion->prepare($Requete);
-
         // bind values
         $stmt->bindParam(":Fou_NomDomaine", $this->nomDomaine);
         $stmt->bindParam(":Fou_NomResp", $this->nomResp);
@@ -169,6 +171,8 @@ class Fournisseur extends Utilisateur
         }
 
         $this->ModifierUser();
+
+        
     }
     public function SupprimerFournisseur()
     {

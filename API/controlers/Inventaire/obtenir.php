@@ -8,20 +8,30 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
-include_once '../../classes/Client.class.php';
+include_once '../../classes/Inventaire.class.php';
 
 $Database = new Database();
 $BDD = $Database->getConnexion();
 
-$NewUtilisateur = new Client($BDD);
+$Inventaire = new Inventaire($BDD);
 
 
 /****--------------------- UTILISATEUR VALIDATION  -----------------------------*/
 
 try {
 
-    $NewUtilisateur->ObtenirTousClient();
-    http_response_code(201);     
+    if(isset($_GET['Inv_Id'])){
+
+        $Inventaire->id_inventaire = $_GET['Inv_Id'];
+        $Inventaire->ObtenirInventaire();
+        http_response_code(201);    
+
+    }else{
+        $Inventaire->ObtenirTousInventaire();
+        http_response_code(201);     
+    }
+
+    
    
 } catch (Exception $e) {
 

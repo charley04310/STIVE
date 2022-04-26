@@ -6,29 +6,26 @@ header("Access-Control-Allow-Methods: PUT"); // On renseigne le type de requete 
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-$UpdateUtilisateur = null;
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
-include_once '../../classes/Fournisseur.class.php';
+include_once '../../classes/ContenuCommandeFournisseur.class.php';
 include_once '../../classes/exceptions/APIException.class.php';
 require_once '../../classes/Jwt.class.php';
+
 
 $Database = new Database();
 $BDD = $Database->getConnexion();
 
-$UpdateUtilisateur = new Fournisseur($BDD);
-$UpdateFournisseur = $UpdateUtilisateur;
+$UpdateContenuCommandeFournisseur = new ContenuCommandeFournisseur($BDD);
 
-$ValidationUpdate = false;
 $jwt = new JWT();
-$content = file_get_contents("php://input");
-$decoded = json_decode($content, true);
+
 
 
 try {
 
 
-    if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
+   /* if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
         http_response_code(405);
         throw new Exception('Méthode incorrect');
     }
@@ -62,11 +59,10 @@ try {
        // http_response_code(403);
     }
 
-   // echo json_encode($jwt->getPayload($token));
+   // echo json_encode($jwt->getPayload($token));*/
 
 
-    $UpdateFournisseur->constructeurModificationFournisseur();
-    $UpdateFournisseur->ModifierFournisseur();
+    $UpdateContenuCommandeFournisseur->SetUpdateContenuCommande();
     http_response_code(201);
 
 } catch (Exception $e) {

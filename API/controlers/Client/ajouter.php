@@ -6,7 +6,7 @@ header("Access-Control-Allow-Methods: POST"); // On renseigne le type de requete
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-$NewUtilisateur = null;
+
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
 include_once '../../classes/Client.class.php';
@@ -17,16 +17,22 @@ $Database = new Database();
 $BDD = $Database->getConnexion();
 
 $NewUtilisateur = new Client($BDD);
-$NewClient = $NewUtilisateur;
+
 
 
 /****--------------------- UTILISATEUR VALIDATION  -----------------------------*/
 
 try {
 
-    $NewUtilisateur->constructeurUtilisateur();
-    $NewClient->constructeurClient();   
-    $NewClient->AjouterClient();
+    $content = file_get_contents("php://input");
+    $decoded = json_decode($content, true);
+
+    $NewUtilisateur->constructeurUtilisateur($decoded);
+    // requete pour verifier si l'utilisateur existe deja
+    $NewUtilisateur->AjouterUser();
+
+    $NewUtilisateur->constructeurClient($decoded);
+    $NewUtilisateur->AjouterClient();
     http_response_code(201);
     
 } catch (ExceptionWithStatusCode $ews) {

@@ -6,34 +6,38 @@ header("Access-Control-Allow-Methods: POST"); // On renseigne le type de requete
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-//$NewUtilisateur = null;
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
-include_once '../../classes/Fournisseur.class.php';
+include_once '../../classes/CommandeFournisseur.class.php';
 include_once '../../classes/exceptions/APIException.class.php';
 
 
 $Database = new Database();
 $BDD = $Database->getConnexion();
 
-$NewUtilisateur = new Fournisseur($BDD);
-//$NewFournisseur = $NewUtilisateur;
+$CommandeFournisseur = new CommandeFournisseur($BDD);
+
 
 
 /****--------------------- UTILISATEUR VALIDATION  -----------------------------*/
 
 try {
 
+    
     $content = file_get_contents("php://input");
     $decoded = json_decode($content, true);
-
-    $NewUtilisateur->constructeurUtilisateur($decoded);
-    $NewUtilisateur->AjouterUser();
     
-    $NewUtilisateur->constructeurFournisseur($decoded);   
-    $NewUtilisateur->AjouterFournisseur();
+    if(isset($decoded['Cof_Fou_Id']) && isset($decoded['Cof_Eta_Id'] )){
+    $CommandeFournisseur->id_fournisseur = $decoded['Cof_Fou_Id'];
+    $CommandeFournisseur->co_etat = $decoded['Cof_Eta_Id'];
+    $CommandeFournisseur->AjouterCommandeFournisseur();
     http_response_code(201);
     
+    }else{
+        throw new Exception('Des champs manquent pour l\'ajout de de commande');
+    }
+
+
 } catch (ExceptionWithStatusCode $ews) {
 
     http_response_code(400);

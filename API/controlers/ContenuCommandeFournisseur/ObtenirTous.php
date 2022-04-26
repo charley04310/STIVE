@@ -8,19 +8,19 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
-include_once '../../classes/Client.class.php';
+include_once '../../classes/ContenuCommandeFournisseur.class.php';
 
 $Database = new Database();
 $BDD = $Database->getConnexion();
 
-$NewUtilisateur = new Client($BDD);
+$GetCommandeFournisseur = new ContenuCommandeFournisseur($BDD);
 
 
 /****--------------------- UTILISATEUR VALIDATION  -----------------------------*/
 
 try {
 
-    $NewUtilisateur->ObtenirTousClient();
+    $GetCommandeFournisseur->ObtenirContenuCommandeFournisseurById();
     http_response_code(201);     
    
 } catch (Exception $e) {

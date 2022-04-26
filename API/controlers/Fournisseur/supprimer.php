@@ -24,8 +24,14 @@ $DeleteFournisseur = $DeleteUtilisateur;
 
 try {
 
-    if (isset($_GET['Uti_Id'])){
-        $DeleteUtilisateur->id_utilisateur  = $_GET['Uti_Id'];
+
+
+
+    $content = file_get_contents("php://input");
+    $decoded = json_decode($content, true);
+
+    if (isset($decoded['Fou_Uti_Id'])){
+        $DeleteUtilisateur->id_utilisateur  = $decoded['Fou_Uti_Id'];
     } else {
         throw new ExceptionWithStatusCode('Supression : Objet Utilisateur incomplet', 400);
     }

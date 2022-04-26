@@ -9,6 +9,8 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 // ON INCLUT CONNEXION BDD ET CLASS
 include_once '../../config/dbConnect.class.php';
 include_once '../../classes/Produit.class.php';
+include_once '../../classes/exceptions/APIException.class.php';
+
 
 $Database = new Database();
 $BDD = $Database->getConnexion();
@@ -20,17 +22,29 @@ $NewProduit = new Produit($BDD);
 
 try {
 
-    if (isset($_GET['Pro_Id'])) {
+    foreach ($_GET as $key => $value) {
+        switch ($key) {
+            case 'Pro_Id':
 
-        $NewProduit->id_produit  = $_GET['Pro_Id'];
-        $NewProduit->ObtenirProduit();
-        http_response_code(201);
-        
-        
-    } else {
+                $NewProduit->id_produit  = $_GET['Pro_Id'];
+                $NewProduit->ObtenirProduit();
+                http_response_code(201);
+                break;
 
-        throw new ExceptionWithStatusCode('Variable Uti_Id inexistante', 400);
+            case 'Pro_Fou_Id':
+
+                $NewProduit->id_fournisseur  = $_GET['Pro_Fou_Id'];
+                $NewProduit->ObtenirProduitByIdFournisseur();
+                http_response_code(201);
+                break;
+
+            default:
+            throw new ExceptionWithStatusCode('Variable Uti_Id ou Pro_Fou_Id inexistante', 400);
+            break;
+        }
     }
+
+
 } catch (ExceptionWithStatusCode $ews) {
 
     http_response_code($ews->statusCode);

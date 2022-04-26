@@ -6,7 +6,7 @@ class Client extends Utilisateur
 
     private $nomTable = "dbo.Client";
 
-    public $id;
+    public $id_client;
     public $prenom;
     public $nom;
     public $dateNaissance;
@@ -16,11 +16,8 @@ class Client extends Utilisateur
     {
         parent::__construct($BDD);
     }
-    public function constructeurClient()
+    public function constructeurClient($decoded)
     {
-
-        $content = file_get_contents("php://input");
-        $decoded = json_decode($content, true);
 
         if (
             isset($decoded['Cli_Nom']) &&
@@ -81,13 +78,14 @@ class Client extends Utilisateur
         } else {
             $this->dateNaissance  = null;
         }
-
+        if (isset($decoded['Uti_CompAdresse'])) {
+            $this->comp_adresse  = $decoded['Uti_CompAdresse'];
+          
+        } 
     }
 
     public function AjouterClient()
     {
-
-        $this->AjouterUser();
 
         $Requete = "INSERT INTO dbo.Client (Cli_Nom, Cli_Prenom, Cli_DateNaissance, Cli_Rol_Id, Cli_Uti_Id)             
                 VALUES (:Cli_Nom, :Cli_Prenom, :Cli_DateNaissance, 1, (SELECT Uti_Id from dbo.Utilisateur WHERE Uti_MailContact=:Uti_MailContact))";
@@ -156,7 +154,23 @@ class Client extends Utilisateur
 
         $this->ModifierUser();
     }
+// obtenir Cli_Id par cli uti id 
+    public function ObtenirIdClient()
+    {
 
+        $ReqClient = "SELECT Cli_Id FROM dbo.Client WHERE Cli_Uti_Id=?";
+        $id = $this->id_utilisateur;
+        $MailVerif = $this->connexion->prepare($ReqClient);
+        $MailVerif->execute(array($id));
+        $result = $MailVerif->fetch();
+      
+        if (!$result) {
+            throw new Exception('Id Client incorrect');
+        }
+        $this->id_client = $result['Cli_Id'];
+       
+    }
+    
     public function SuprimerClient()
     {
 

@@ -28,34 +28,31 @@ class Image extends Produit
             isset($_FILES['Img_File'])
         ) {
 
-            if($_FILES['Img_File']['size'] <= $this->tailleMax){
+            if ($_FILES['Img_File']['size'] <= $this->tailleMax) {
 
                 $extentionUpload = strtolower(substr(strrchr($_FILES['Img_File']['name'], '.'), 1));
 
-                if(in_array($extentionUpload, $this->extensionValide)){
+                if (in_array($extentionUpload, $this->extensionValide)) {
 
-                    $chemin = "../img/".$decoded['Img_Nom'].".".$extentionUpload;
+                    $chemin = "../img/" . $decoded['Img_Nom'] . "." . $extentionUpload;
                     $this->img_adresse = $chemin;
 
                     $resultat = move_uploaded_file($_FILES['Img_File']['tmp_name'], $chemin);
 
-                    if($resultat){
-                        
+                    if ($resultat) {
+
                         $this->id_produit = $decoded['Pro_Id'];
                         $this->img_nom = $decoded['Img_Nom'];
-            
-                    }else{
+                    } else {
                         throw new Exception('IMAGE : problème lors de l\'enregistrement sur le serveur ');
                     }
-                }else{
+                } else {
 
                     throw new Exception('IMAGE : extension invalide ! ');
                 }
-            
-            }else{
-              throw new Exception('IMAGE : La taille de l\'image est trop grande');
-            }  
-
+            } else {
+                throw new Exception('IMAGE : La taille de l\'image est trop grande');
+            }
         } else {
             throw new ExceptionWithStatusCode('Objet Image incomplet', 400);
         }
@@ -78,7 +75,8 @@ class Image extends Produit
         }
     }
 
-    public function ModifierImage(){
+    public function ModifierImage()
+    {
 
         $VerifFourn = "SELECT * FROM dbo.Image WHERE Img_Id=:Img_Id";
         $id = $this->img_id;
@@ -103,14 +101,14 @@ class Image extends Produit
         $stmt->bindParam(":Img_Adresse",  $this->img_adresse);
         $stmt->bindParam(":Img_Nom", $this->img_nom);
         // bind values
-        
+
         if (!$stmt->execute()) {
             throw new Exception('Probleme lors de la requete Modification de  Fournisseur');
         }
-
     }
 
-    public function ObtenirImage(){
+    public function ObtenirImage()
+    {
 
         $ReqClient = "SELECT * FROM dbo.Image WHERE Img_Pro_Id=?";
         $id = $this->id_produit;
@@ -147,6 +145,5 @@ class Image extends Produit
         if (!$MailVerif->execute()) {
             throw new Exception('Suppression Image : probleme lors de l\'execution');
         }
-
     }
 }

@@ -15,7 +15,7 @@ class Utilisateur
     public $code_postal;
     public $pays;
     public $password;
-    public $verifyPassword;
+    private $verifyPassword;
     public $ville;
     public $dateCreation;
     public $id_utilisateur;
@@ -74,7 +74,7 @@ class Utilisateur
         $this->nom =  $this->test_input($this->nom);
         $this->prenom =  $this->test_input($this->prenom);
         $this->adresse =  $this->test_input($this->adresse);
-        $this->comp_adresse =  $this->test_input($this->comp_adresse);
+        $this->comp_adresse =  $this->comp_adresse;
         $this->tel =  $this->test_input($this->tel);
         $this->mail =  $this->test_input($this->mail);
         $this->code_postal =  $this->test_input($this->code_postal);
@@ -83,8 +83,6 @@ class Utilisateur
         $this->dateCreation =  $this->test_input($this->dateCreation);
         $this->verifyPassword =  $this->test_input($this->verifyPassword);
         $this->prenom =  $this->length_string($this->prenom);
-        $this->adresse =  $this->length_string($this->adresse);
-        $this->comp_adresse =  $this->length_string($this->comp_adresse);
         $this->tel =  $this->length_string($this->tel);
         $this->mail =  $this->length_string($this->mail);
         $this->code_postal =  $this->length_string($this->code_postal);
@@ -93,10 +91,9 @@ class Utilisateur
         $this->dateCreation =  $this->length_string($this->dateCreation);
         $this->verifyPassword =  $this->length_string($this->verifyPassword);
     }
-    public function constructeurUtilisateur()
+    public function constructeurUtilisateur($decoded)
     {
-        $content = file_get_contents("php://input");
-        $decoded = json_decode($content, true);
+
 
         if (
             isset($decoded['Uti_Adresse']) &&
@@ -117,7 +114,7 @@ class Utilisateur
             //$this->mail = filter_var($decoded['Mail'], FILTER_VALIDATE_EMAIL);
             $this->validate();
         } else {
-            throw new ExceptionWithStatusCode('Objet Utilisatrice 2 incomplet', 400);
+            throw new ExceptionWithStatusCode('Objet Utilisatrice incomplet', 400);
         }
 
         if (isset($decoded['Uti_CompAdresse'])) {
@@ -139,7 +136,10 @@ class Utilisateur
 
 
         if ($MailVerif->fetch()) {
+
             throw new Exception('Mail Utilisateur deja pris');
+
+            
         } else {
             $Requete = "INSERT INTO dbo.Utilisateur (Uti_Adresse, Uti_CompAdresse, Uti_Cp, Uti_Ville, Uti_Pays, Uti_TelContact, Uti_Mdp, Uti_MailContact)
                 VALUES (:Uti_Adresse, :Uti_CompAdresse, :Uti_Cp, :Uti_Ville, :Uti_Pays, :Uti_TelContact, :Uti_Mdp, :Uti_MailContact) ";
@@ -183,7 +183,7 @@ class Utilisateur
         $stmt->bindParam(":Uti_Mdp", $this->password);
         $stmt->bindParam(":Uti_MailContact", $this->mail);
         $stmt->bindParam(":Uti_Id", $this->id_utilisateur);
-
+       
         // execute the query
         if (!$stmt->execute()) {
             throw new Exception('Probleme lors de l\'execution de modification Utilisateur');
@@ -212,5 +212,61 @@ class Utilisateur
         if (!$MailVerif->execute()) {
             throw new Exception('Suppression : Id Utilisateur incorrect');
         }
+    }
+    public function obtenirUtilisateur(): bool{
+
+        $MailReq = "SELECT * FROM dbo.Utilisateur WHERE Uti_MailContact=?";
+        $mail = $this->mail;
+        $MailVerif = $this->connexion->prepare($MailReq);
+        $MailVerif->execute(array($mail));
+        if($resultat = $MailVerif->fetch()){
+            $this->id_utilisateur = $resultat['Uti_Id'];  
+            return true;    
+        }else{
+            return false;
+        }
+       
+
+      
+    }
+    public function LoginToken($decoded)
+    {
+
+        if (!isset($decoded['Uti_MailContact']) && !isset($decoded['Uti_Mdp'])) {
+            throw new Exception('Connexion : champ vide');
+        }
+
+        $this->mail = $decoded['Uti_MailContact'];
+        $this->password = $decoded['Uti_Mdp'];
+
+
+        $VerifUti = "SELECT * FROM dbo.View_Fournisseur WHERE Uti_MailContact=:Uti_MailContact";
+        $ConnUtilisateur = $this->connexion->prepare($VerifUti);
+
+        $ConnUtilisateur->bindParam(":Uti_MailContact", $this->mail);
+        //$ConnUtilisateur->bindParam(":Uti_Mdp", $this->password);
+
+        $ConnUtilisateur->execute();
+
+        $result = $ConnUtilisateur->fetch();
+
+        if (!$result) {
+            throw new Exception('Connexion :  Identifiants ou Mot de passe incorrect');
+        }
+
+     
+
+        if ($result['Rol_Id'] === 3 || $result['Rol_Id'] === '3') {
+
+            if (!password_verify($this->password, $result['Uti_Mdp'])) {
+                throw new Exception('Connexion :  Password incorrect');
+            }
+            
+        }else{
+
+            throw new Exception('Type user :  vous ne possedez pas le droit d\'accéder à cet espace');
+
+        }
+
     }
 }

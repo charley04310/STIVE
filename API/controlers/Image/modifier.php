@@ -29,7 +29,7 @@ try {
 
         $UpdateImage->img_id = $decoded['Img_Id'];
 
-        $UpdateImage->constructeurImage();
+        //$UpdateImage->constructeurImage();
         $UpdateImage->ModifierImage();
         http_response_code(201);
 

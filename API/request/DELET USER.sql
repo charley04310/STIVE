@@ -1,0 +1,1 @@
+DELETE FROM dbo.Utilisateur WHERE Uti_Id=1011

@@ -1,6 +1,6 @@
 <?php 
 
-class Etat {
+class Etat{
 
     private $connexion;
     private $nomTable = "Etat";
